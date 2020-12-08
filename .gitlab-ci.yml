@@ -1,0 +1,41 @@
+image: maven:latest
+
+variables:
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  MAVEN_OPTS: "-Dmaven.repo.local=.$CI_PROJECT_DIR/.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository
+
+stages:
+    - compile
+    - unit test
+    - package
+    - static analysis
+
+compile:
+  stage: compile
+  script:
+    - echo "Building project..."
+    - mvn $MAVEN_CLI_OPTS compile
+
+unit test:
+  stage: unit test
+  script:
+    - echo "Testing..."
+    - mvn $MAVEN_CLI_OPTS test
+
+package:
+  stage: package
+  script:
+    - echo "Packaging..."
+    - mvn $MAVEN_CLI_OPTS package
+
+static analysis:
+  stage: static analysis
+  script:
+    - echo "Static analysis..."
+    - mvn spotbugs:check
+    - mvn pmd:check
+    - mvn jacoco:check

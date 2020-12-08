@@ -1,0 +1,13 @@
+= ShipsBackend
+
+== Overview
+This is a project of a backend for the *Ships* game.
+
+== Prerequisites
+If you want to build it you need the following Java version: 11.0.9.1.
+
+== Run
+In order to run, execute `mvn spring-boot:run` if maven is configured on your machine.
+Otherwise, execute `./mvnw spring-boot:run`.
+
+When application runs, the logs are saved in `${HOME}/logs`.
