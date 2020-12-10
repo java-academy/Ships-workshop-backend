@@ -26,7 +26,8 @@
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.main.package>ShipsRoomServiceApplication</project.main.package>
+		<project.main.package>com.ja.ships_backend.ShipsBackendApplication</project.main.package>
+
 		<!-- plugin versions -->
 		<version.enforcer.plugin>3.0.0-M3</version.enforcer.plugin>
 		<version.maven.javadoc.plugin>3.2.0</version.maven.javadoc.plugin>
