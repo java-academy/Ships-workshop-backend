@@ -20,7 +20,7 @@ public class ShipsBackendApplicationTests {
 		ShipsBackendApplication.main(new String[] {});
 	}
 
-	@org.testng.annotations.Test
+	@Test
 	 public void testHomeMessage() {
 		// given
 		final String expectedMessage = "Welcome to Ships Backend";
