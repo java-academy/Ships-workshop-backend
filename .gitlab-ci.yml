@@ -7,6 +7,7 @@ stages:
   - build
   - test
   - package
+  - static analysis
   - deploy
 
 
@@ -30,6 +31,15 @@ test:
   stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
+
+static analysis:
+  stage: static analysis
+  script:
+    - echo "Static analysis..."
+    - mvn spotbugs:check
+    - mvn pmd:check
+    - mvn jacoco:check
+
 
 package:
   stage: package
