@@ -1,8 +1,19 @@
-image: maven:latest
+image: docker:latest
+services:
+  - maven:latest
+
+
+stages:
+  - build
+  - test
+  - package
+  - static analysis
+  - deploy
+
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-  MAVEN_OPTS: "-Dmaven.repo.local=.$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
 cache:
   paths:
@@ -15,23 +26,17 @@ stages:
   - package
   - static analysis
 
-compile:
-  stage: compile
+build:
+  image: maven:latest
+  stage: build
   script:
-    - echo "Building project..."
     - mvn $MAVEN_CLI_OPTS compile
 
-unit test:
-  stage: unit test
+test:
+  image: maven:latest
+  stage: test
   script:
-    - echo "Testing..."
     - mvn $MAVEN_CLI_OPTS test
-
-package:
-  stage: package
-  script:
-    - echo "Packaging..."
-    - mvn $MAVEN_CLI_OPTS package
 
 static analysis:
   stage: static analysis
@@ -40,3 +45,25 @@ static analysis:
     - mvn spotbugs:check
     - mvn pmd:check
     - mvn jacoco:check
+
+
+package:
+  stage: package
+  image: maven:latest
+  script:
+    - mvn $MAVEN_CLI_OPTS package
+  only:
+    - master
+
+
+deploy:
+  image: heroku:latest
+  stage: deploy
+  script:
+    - docker build -f Dockerfile -t $HEROKU_APP .
+    - docker login -u _ -p $HEROKU_API_KEY registry.heroku.com
+    - heroku container:push --app $HEROKU_APP --context-path . web
+    - heroku container:release web --app $HEROKU_APP
+  only:
+    - master
+
