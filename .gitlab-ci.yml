@@ -20,12 +20,6 @@ cache:
     - .m2/repository
     - target/
 
-stages:
-  - compile
-  - unit test
-  - package
-  - static analysis
-
 build:
   image: maven:latest
   stage: build
