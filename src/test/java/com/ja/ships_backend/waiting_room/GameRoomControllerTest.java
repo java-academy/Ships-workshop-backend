@@ -3,7 +3,6 @@ package com.ja.ships_backend.waiting_room;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -82,7 +81,7 @@ public class GameRoomControllerTest {
     public void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccured(RoomStatus roomStatus) throws Exception {
         when(gameRoomService.addPlayer(any())).thenReturn(roomStatus);
         MvcResult mvcResult = this.mockMvc.perform(post("/room"))
-                .andExpect(status().isForbidden())
+                .andExpect(status().isConflict())
                 .andExpect(content().string(roomStatus.val))
                 .andReturn();
 
@@ -106,7 +105,7 @@ public class GameRoomControllerTest {
         when(gameRoomService.deletePlayer(any())).thenReturn(RoomStatus.NO_SUCH_PLAYER);
         MvcResult mvcResult = this.mockMvc
                 .perform(delete("/room"))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(RoomStatus.NO_SUCH_PLAYER.val))
                 .andReturn();
         assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");

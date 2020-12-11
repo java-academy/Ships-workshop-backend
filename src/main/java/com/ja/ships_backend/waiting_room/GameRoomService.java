@@ -9,9 +9,10 @@ import java.util.List;
 
 @Service
 public class GameRoomService {
-    @Getter
-    private final List<Player> playerListInRoom = new ArrayList<>(2);
     private static final int MAX_PLAYERS_IN_ROOM = 2;
+    @Getter
+    private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);
+
 
     RoomStatus addPlayer(Player player) {
         RoomStatus result = checkIfAnotherPlayerCanBeAddedToRoom(player.getName());
