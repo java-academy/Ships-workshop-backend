@@ -12,13 +12,11 @@ public class GameRoomService {
     @Getter
     private final List<Player> playerListInRoom = new ArrayList<>(2);
     private static final int MAX_PLAYERS_IN_ROOM = 2;
-    private static int NEXT_ID = 1;
 
     RoomStatus addPlayer(Player player) {
         RoomStatus result = checkIfAnotherPlayerCanBeAddedToRoom(player.getName());
         if(result == RoomStatus.SUCCESS) {
             playerListInRoom.add(player);
-            NEXT_ID++;
         }
         return result;
     }
