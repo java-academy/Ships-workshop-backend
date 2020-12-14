@@ -9,17 +9,9 @@ import org.tinylog.Logger;
 /**
  * Main class responsible for start an application.
  */
-@RestController  //TODO: remove it. Separate controller for it
 @SpringBootApplication
 public class ShipsBackendApplication {
 	//TODO: remove password and login from properties file
-
-	@RequestMapping("/")
-	String home() {
-		return "Welcome to Ships Backend";
-	}//TODO: remove it
-
-
 
 	public static void main(String[] args) {
 		Logger.debug("Application start");

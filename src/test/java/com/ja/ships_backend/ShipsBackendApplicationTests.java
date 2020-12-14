@@ -25,7 +25,7 @@ public class ShipsBackendApplicationTests {
 		// given
 		final String expectedMessage = "Welcome to Ships Backend";
 		// when
-		final String homeMessage = new ShipsBackendApplication().home();
+		final String homeMessage = new ShipsController().home();
 		// then
 		assertEquals(expectedMessage, homeMessage);
 	}
