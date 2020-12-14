@@ -1,6 +1,5 @@
-package com.ja.ships_backend.waiting_room;
+package com.ships.room;
 
-import org.mockito.internal.matchers.apachecommons.ReflectionEquals;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
