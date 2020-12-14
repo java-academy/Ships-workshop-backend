@@ -315,14 +315,10 @@
 						<reports>
 <!--							TODO: check which reports are used, remove rest-->
 							<report>dependencies</report>
-							<report>ci-management</report>
-							<report>dependency-info</report>
 							<report>distribution-management</report>
 							<report>index</report>
 							<report>issue-management</report>
-							<report>licenses</report>
 							<report>mailing-lists</report>
-							<report>modules</report>
 							<report>plugins</report>
 							<report>scm</report>
 							<report>summary</report>
