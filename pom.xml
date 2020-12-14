@@ -302,6 +302,7 @@
 				<reportSets>
 					<reportSet>
 						<reports>
+<!--						TODO: check which reports are used, remove rest-->
 							<report>dependencies</report>
 							<report>ci-management</report>
 							<report>dependency-info</report>
