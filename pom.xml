@@ -193,6 +193,11 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${version.org.jacoco}</version>
+				<configuration>
+					<excludes>
+						<exclude>com/ships/ShipsRoomServiceApplication.class</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>pre-unit-test</id>
@@ -233,7 +238,7 @@
 											<counter>BRANCH</counter>
 											<value>COVEREDRATIO</value>
 <!--											TODO: change it when we add more code-->
-											<minimum>0.20</minimum>
+											<minimum>0.60</minimum>
 										</limit>
 									</limits>
 								</rule>
@@ -313,7 +318,6 @@
 				<reportSets>
 					<reportSet>
 						<reports>
-<!--							TODO: check which reports are used, remove rest-->
 							<report>dependencies</report>
 							<report>distribution-management</report>
 							<report>index</report>
@@ -341,6 +345,11 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${version.org.jacoco}</version>
+				<configuration>
+					<excludes>
+						<exclude>com/ships/ShipsRoomServiceApplication.class</exclude>
+					</excludes>
+				</configuration>
 				<reportSets>
 					<reportSet>
 						<reports>
