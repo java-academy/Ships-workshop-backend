@@ -1,7 +1,7 @@
-= ShipsBackend
+= RoomService
 
 == Overview
-This is a project of a backend for the *Ships* game.
+This is a project of a room service for the *Ships* game.
 
 == Prerequisites
 If you want to build it you need the following Java version: 11.0.9.1.

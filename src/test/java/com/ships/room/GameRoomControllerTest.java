@@ -1,4 +1,4 @@
-package com.ja.ships_backend.waiting_room;
+package com.ships.room;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -78,7 +78,7 @@ public class GameRoomControllerTest {
     }
 
     @Test(dataProvider = "errorCasesInHttpPostResponse")
-    public void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccured(RoomStatus roomStatus) throws Exception {
+    public void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccurred(RoomStatus roomStatus) throws Exception {
         when(gameRoomService.addPlayer(any())).thenReturn(roomStatus);
         MvcResult mvcResult = this.mockMvc.perform(post("/room"))
                 .andExpect(status().isConflict())

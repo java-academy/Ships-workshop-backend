@@ -1,4 +1,4 @@
-package com.ja.ships_backend.waiting_room;
+package com.ships.room;
 
 import lombok.Getter;
 import org.springframework.stereotype.Service;

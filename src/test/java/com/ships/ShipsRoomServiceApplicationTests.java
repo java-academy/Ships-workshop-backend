@@ -1,4 +1,4 @@
-package com.ja.ships_backend;
+package com.ships;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.testng.annotations.Test;
@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import static org.testng.Assert.assertEquals;
 
 @SpringBootTest
-public class ShipsBackendApplicationTests {
+public class ShipsRoomServiceApplicationTests {
 
 	@Test
 	void applicationStartTest() {
@@ -17,7 +17,7 @@ public class ShipsBackendApplicationTests {
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(output));
 		// then
-		ShipsBackendApplication.main(new String[] {});
+		ShipsRoomServiceApplication.main(new String[] {});
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class ShipsBackendApplicationTests {
 		// given
 		final String expectedMessage = "Welcome to Ships Backend";
 		// when
-		final String homeMessage = new ShipsBackendApplication().home();
+		final String homeMessage = new ShipsController().home();
 		// then
 		assertEquals(expectedMessage, homeMessage);
 	}

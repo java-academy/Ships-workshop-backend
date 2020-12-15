@@ -9,16 +9,16 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.ja</groupId>
-	<artifactId>ShipsBackend</artifactId>
+	<groupId>com.ships</groupId>
+	<artifactId>RoomService</artifactId>
 	<version>0.0.1</version>
-	<name>ShipsBackend</name>
-	<description>Backend for Ships project</description>
+	<name>Ships - room service</name>
+	<description>Room service implementation for Ships project</description>
 
 	<url>http://localhost:8080/</url>
 
 	<scm>
-		<url>https://gitlab.com/MJ211/ShipsBackend</url>
+		<url>https://gitlab.com/MJ211/RoomService</url>
 	</scm>
 
 	<properties>
@@ -29,27 +29,29 @@
 		<project.main.package>com.ja.ships_backend.ShipsBackendApplication</project.main.package>
 
 		<!-- plugin versions -->
-		<version.plugin.maven.dependency>3.1.2</version.plugin.maven.dependency>
-		<version.plugin.maven.jar>3.1.0</version.plugin.maven.jar>
-		<version.plugin.maven.exec>3.0.0</version.plugin.maven.exec>
-		<version.plugin.maven.compiler>3.8.1</version.plugin.maven.compiler>
-		<version.maven-required>3.1.0</version.maven-required>
-		<version.enforcer-plugin>3.0.0-M3</version.enforcer-plugin>
-		<version.plugin.spotbugs>4.1.3</version.plugin.spotbugs>
-		<version.plugin.maven.project.info.reports>3.1.1</version.plugin.maven.project.info.reports>
-		<version.pmd-plugin>3.14.0</version.pmd-plugin>
-		<v.maven-surefire-plugin>3.0.0-M3</v.maven-surefire-plugin>
-		<!-- dependency versions -->
-		<version.org.testng>7.3.0</version.org.testng>
-		<version.org.tinylog>2.2.0</version.org.tinylog>
-		<version.org.mockito.core>3.6.0</version.org.mockito.core>
-		<version.org.jacoco>0.8.6</version.org.jacoco>
-		<version.com.github.spotbugs>4.1.4</version.com.github.spotbugs>
-		<version.org.apache.maven.site.plugin>3.9.1</version.org.apache.maven.site.plugin>
-		<version.spring.boot.starter>2.4.0</version.spring.boot.starter>
-		<version.spring.security.test>5.4.2</version.spring.security.test>
-		<version.lombok>1.18.16</version.lombok>
+		<version.enforcer.plugin>3.0.0-M3</version.enforcer.plugin>
 		<version.maven.javadoc.plugin>3.2.0</version.maven.javadoc.plugin>
+		<version.maven.required>3.6.3</version.maven.required>
+		<version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
+		<version.plugin.maven.compiler>3.8.1</version.plugin.maven.compiler>
+		<version.plugin.maven.dependency>3.1.2</version.plugin.maven.dependency>
+		<version.plugin.maven.exec>3.0.0</version.plugin.maven.exec>
+		<version.plugin.maven.jar>3.2.0</version.plugin.maven.jar>
+		<version.plugin.maven.project.info.reports>3.1.1</version.plugin.maven.project.info.reports>
+		<version.plugin.spotbugs>4.1.4</version.plugin.spotbugs>
+		<version.pmd.plugin>3.14.0</version.pmd.plugin>
+		<version.spring.boot.maven.plugin>2.4.1</version.spring.boot.maven.plugin>
+
+		<!-- dependency versions -->
+		<version.org.apache.maven.site.plugin>3.9.1</version.org.apache.maven.site.plugin>
+		<version.com.github.spotbugs>4.2.0</version.com.github.spotbugs>
+		<version.lombok>1.18.16</version.lombok>
+		<version.org.jacoco>0.8.6</version.org.jacoco>
+		<version.org.mockito.core>3.6.28</version.org.mockito.core>
+		<version.org.testng>7.3.0</version.org.testng>
+		<version.org.tinylog>2.2.1</version.org.tinylog>
+		<version.spring.boot.starter>2.4.1</version.spring.boot.starter>
+		<version.spring.security.test>5.4.2</version.spring.security.test>
 	</properties>
 
 	<dependencies>
@@ -114,6 +116,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${version.spring.boot.maven.plugin}</version>
 			</plugin>
 
 			<plugin>
@@ -128,7 +131,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>${version.enforcer-plugin}</version>
+				<version>${version.enforcer.plugin}</version>
 				<executions>
 					<execution>
 						<id>enforce-maven</id>
@@ -138,7 +141,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>${version.maven-required}</version>
+									<version>${version.maven.required}</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
 									<version>${java.version}</version>
@@ -182,26 +185,14 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>${version.plugin.maven.exec}</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<mainClass>${project.main.package}</mainClass>
-					<executable>maven</executable>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${version.org.jacoco}</version>
+				<configuration>
+					<excludes>
+						<exclude>com/ships/ShipsRoomServiceApplication.class</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<id>pre-unit-test</id>
@@ -242,7 +233,7 @@
 											<counter>BRANCH</counter>
 											<value>COVEREDRATIO</value>
 <!--											TODO: change it when we add more code-->
-											<minimum>0.20</minimum>
+											<minimum>0.60</minimum>
 										</limit>
 									</limits>
 								</rule>
@@ -272,6 +263,7 @@
 						<groupId>com.github.spotbugs</groupId>
 						<artifactId>spotbugs</artifactId>
 						<version>${version.com.github.spotbugs}</version>
+						<type>pom</type>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -291,7 +283,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>${version.pmd-plugin}</version>
+				<version>${version.pmd.plugin}</version>
 				<configuration>
 					<linkXRef>false</linkXRef>
 				</configuration>
@@ -300,7 +292,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>${v.maven-surefire-plugin}</version>
+				<version>${version.maven.surefire.plugin}</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.surefire</groupId>
+						<artifactId>surefire-testng</artifactId>
+						<version>${version.maven.surefire.plugin}</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
@@ -315,14 +314,10 @@
 					<reportSet>
 						<reports>
 							<report>dependencies</report>
-							<report>ci-management</report>
-							<report>dependency-info</report>
 							<report>distribution-management</report>
 							<report>index</report>
 							<report>issue-management</report>
-							<report>licenses</report>
 							<report>mailing-lists</report>
-							<report>modules</report>
 							<report>plugins</report>
 							<report>scm</report>
 							<report>summary</report>
@@ -333,15 +328,9 @@
 			</plugin>
 
 			<plugin>
-				<groupId>com.github.spotbugs</groupId>
-				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>${version.com.github.spotbugs}</version>
-			</plugin>
-
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
-				<version>${version.pmd-plugin}</version>
+				<version>${version.pmd.plugin}</version>
 				<configuration>
 					<linkXRef>false</linkXRef>
 				</configuration>
@@ -351,6 +340,11 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${version.org.jacoco}</version>
+				<configuration>
+					<excludes>
+						<exclude>com/ships/ShipsRoomServiceApplication.class</exclude>
+					</excludes>
+				</configuration>
 				<reportSets>
 					<reportSet>
 						<reports>

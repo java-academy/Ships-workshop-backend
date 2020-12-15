@@ -1,4 +1,4 @@
-package com.ja.ships_backend.waiting_room;
+package com.ships.room;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+//TODO: create .properties file which will bypass checking coverage for the equals method etc. (lombok)
 
 @RestController
 @RequestMapping(value = "/room", produces = "application/json; charset=UTF-8")
