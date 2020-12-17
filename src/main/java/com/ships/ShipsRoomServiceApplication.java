@@ -10,6 +10,11 @@ import org.tinylog.Logger;
 @SpringBootApplication
 class ShipsRoomServiceApplication {
 
+	/**
+	 * Main method for starting application
+	 *
+	 * @param args    Input arguments from console
+	 */
 	public static void main(String[] args) {
 		Logger.debug("Application start");
 		configureHeroku();
