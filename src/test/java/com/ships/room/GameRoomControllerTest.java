@@ -20,8 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.testng.Assert.assertEquals;
 
-@AutoConfigureMockMvc
-@WebMvcTest(GameRoomController.class)
 public class GameRoomControllerTest {
     private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
     private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
@@ -31,13 +29,13 @@ public class GameRoomControllerTest {
     private MockMvc mockMvc;
 
     @BeforeMethod
-    public void setup() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(new GameRoomController(gameRoomService)).build();
     }
 
     @Test
-    public void shouldHttpGetReturnEmptyMessageWhenNobodyIsInRoom() throws Exception {
+    void shouldHttpGetReturnEmptyMessageWhenNobodyIsInRoom() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get("/room"))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -46,7 +44,7 @@ public class GameRoomControllerTest {
     }
 
     @Test
-    public void shouldHttpGetReturnMessageWithTwoPlayersWhenTwoAreAlreadyInRoom() throws Exception {
+    void shouldHttpGetReturnMessageWithTwoPlayersWhenTwoAreAlreadyInRoom() throws Exception {
         when(gameRoomService.getPlayerListInRoom()).thenReturn(List.of(DUMMY_PLAYER_1, DUMMY_PLAYER_2));
         MvcResult mvcResult = this.mockMvc.perform(get("/room"))
                 .andExpect(status().isOk())
@@ -58,7 +56,7 @@ public class GameRoomControllerTest {
     }
 
     @Test
-    public void shouldHttpPostReturnSuccess() throws Exception {
+    void shouldHttpPostReturnSuccess() throws Exception {
         when(gameRoomService.addPlayer(refEq(DUMMY_PLAYER_2))).thenReturn(RoomStatus.SUCCESS);
         MvcResult mvcResult = this.mockMvc
                 .perform(post("/room")
@@ -78,7 +76,7 @@ public class GameRoomControllerTest {
     }
 
     @Test(dataProvider = "errorCasesInHttpPostResponse")
-    public void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccurred(RoomStatus roomStatus) throws Exception {
+    void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccurred(RoomStatus roomStatus) throws Exception {
         when(gameRoomService.addPlayer(any())).thenReturn(roomStatus);
         MvcResult mvcResult = this.mockMvc.perform(post("/room"))
                 .andExpect(status().isConflict())
@@ -89,7 +87,7 @@ public class GameRoomControllerTest {
     }
 
     @Test
-    public void shouldHttpDeleteReturnSuccess() throws Exception {
+    void shouldHttpDeleteReturnSuccess() throws Exception {
         when(gameRoomService.deletePlayer(refEq(DUMMY_PLAYER_1))).thenReturn(RoomStatus.SUCCESS);
         MvcResult mvcResult = this.mockMvc
                 .perform(delete("/room")
@@ -101,7 +99,7 @@ public class GameRoomControllerTest {
     }
 
     @Test
-    public void shouldHttpDeleteReturnNoSuchPlayerMessage() throws Exception {
+    void shouldHttpDeleteReturnNoSuchPlayerMessage() throws Exception {
         when(gameRoomService.deletePlayer(any())).thenReturn(RoomStatus.NO_SUCH_PLAYER);
         MvcResult mvcResult = this.mockMvc
                 .perform(delete("/room"))

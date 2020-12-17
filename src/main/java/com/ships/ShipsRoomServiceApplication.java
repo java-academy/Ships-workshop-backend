@@ -8,7 +8,8 @@ import org.tinylog.Logger;
  * Main class responsible for start an application.
  */
 @SpringBootApplication
-public class ShipsRoomServiceApplication {
+class ShipsRoomServiceApplication {
+
 	public static void main(String[] args) {
 		Logger.debug("Application start");
 		configureHeroku();

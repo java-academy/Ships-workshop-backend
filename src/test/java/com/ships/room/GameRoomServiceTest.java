@@ -18,32 +18,32 @@ public class GameRoomServiceTest {
     }
 
     @Test
-    public void shouldAddPlayerReturnSuccessStatusIfThereIsPlaceInRoom() {
+    void shouldAddPlayerReturnSuccessStatusIfThereIsPlaceInRoom() {
         assertEquals(sut.addPlayer(DUMMY_PLAYER_1), RoomStatus.SUCCESS);
     }
 
     @Test
-    public void shouldAddPlayerReturnNicknameDuplicationStatusWhenPersonInRoomHasThisNickname() {
+    void shouldAddPlayerReturnNicknameDuplicationStatusWhenPersonInRoomHasThisNickname() {
         sut.addPlayer(DUMMY_PLAYER_1);
         assertEquals(sut.addPlayer(DUMMY_PLAYER_1), RoomStatus.NICKNAME_DUPLICATION);
     }
 
     @Test
-    public void shouldAddPlayerReturnRoomIsFullStatusWhenPThereIsNotEnoughSpaceInRoom() {
+    void shouldAddPlayerReturnRoomIsFullStatusWhenPThereIsNotEnoughSpaceInRoom() {
         sut.addPlayer(DUMMY_PLAYER_1);
         sut.addPlayer(DUMMY_PLAYER_2);
         assertEquals(sut.addPlayer(DUMMY_PLAYER_3), RoomStatus.ROOM_IS_FULL);
     }
 
     @Test
-    public void shouldDeletePlayerReturnNoSuchPlayerStatusWhenTryingToRemovePlayerWithDifferentNicknameThanRoomMembers(){
+    void shouldDeletePlayerReturnNoSuchPlayerStatusWhenTryingToRemovePlayerWithDifferentNicknameThanRoomMembers(){
         sut.addPlayer(DUMMY_PLAYER_1);
         sut.addPlayer(DUMMY_PLAYER_2);
         assertEquals(sut.deletePlayer(DUMMY_PLAYER_3), RoomStatus.NO_SUCH_PLAYER);
     }
 
     @Test
-    public void shouldDeletePlayerReturnSuccessStatusWhenTryingToRemovePlayerWhoAreInRoom(){
+    void shouldDeletePlayerReturnSuccessStatusWhenTryingToRemovePlayerWhoAreInRoom(){
         sut.addPlayer(DUMMY_PLAYER_1);
         SoftAssert sa = new SoftAssert();
         sa.assertEquals(sut.deletePlayer(DUMMY_PLAYER_1), RoomStatus.SUCCESS, "Delete assert");
