@@ -232,7 +232,6 @@
 										<limit>
 											<counter>BRANCH</counter>
 											<value>COVEREDRATIO</value>
-<!--											TODO: change it when we add more code-->
 											<minimum>0.60</minimum>
 										</limit>
 									</limits>
