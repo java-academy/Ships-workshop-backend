@@ -14,17 +14,17 @@ class GameRoomController {
     private final GameRoomService gameRoomService;
 
     @GetMapping
-    private List<Player> fetchPlayers() {
+    List<Player> fetchPlayers() {
         return gameRoomService.getPlayerListInRoom();
     }
 
     @PostMapping
-    private ResponseEntity<?> addPlayerToRoom(Player player) {
+    ResponseEntity<?> addPlayerToRoom(Player player) {
         return handleResponse(player, gameRoomService.addPlayer(player), HttpStatus.CONFLICT);
     }
 
     @DeleteMapping
-    private ResponseEntity<?> removePlayerFromRoom(Player player) {
+    ResponseEntity<?> removePlayerFromRoom(Player player) {
         return handleResponse(player, gameRoomService.deletePlayer(player), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
