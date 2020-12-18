@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GameRoomService {
+class GameRoomService {
     private static final int MAX_PLAYERS_IN_ROOM = 2;
     @Getter
     private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);

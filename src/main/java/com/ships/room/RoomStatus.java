@@ -3,7 +3,7 @@ package com.ships.room;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum RoomStatus {
+enum RoomStatus {
     SUCCESS("Success"),
     NICKNAME_DUPLICATION("This nickname is taken!"),
     ROOM_IS_FULL("Room is full!"),

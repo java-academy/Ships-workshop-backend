@@ -7,26 +7,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-//TODO: create .properties file which will bypass checking coverage for the equals method etc. (lombok)
-
 @RestController
 @RequestMapping(value = "/room", produces = "application/json; charset=UTF-8")
 @AllArgsConstructor
-public class GameRoomController {
+class GameRoomController {
     private final GameRoomService gameRoomService;
 
     @GetMapping
-    public List<Player> fetchPlayers() {
+    List<Player> fetchPlayers() {
         return gameRoomService.getPlayerListInRoom();
     }
 
     @PostMapping
-    public ResponseEntity<?> addPlayerToRoom(Player player) {
+    ResponseEntity<?> addPlayerToRoom(Player player) {
         return handleResponse(player, gameRoomService.addPlayer(player), HttpStatus.CONFLICT);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> removePlayerFromRoom(Player player) {
+    ResponseEntity<?> removePlayerFromRoom(Player player) {
         return handleResponse(player, gameRoomService.deletePlayer(player), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 

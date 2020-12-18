@@ -26,7 +26,7 @@
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<project.main.package>com.ja.ships_backend.ShipsBackendApplication</project.main.package>
+		<project.main.package>com.ships.ShipsRoomServiceApplication</project.main.package>
 
 		<!-- plugin versions -->
 		<version.enforcer.plugin>3.0.0-M3</version.enforcer.plugin>
@@ -164,6 +164,7 @@
 							<goal>copy-dependencies</goal>
 						</goals>
 						<configuration>
+							<includeScope>compile</includeScope>
 							<outputDirectory>${project.build.directory}/lib</outputDirectory>
 						</configuration>
 					</execution>
@@ -232,7 +233,6 @@
 										<limit>
 											<counter>BRANCH</counter>
 											<value>COVEREDRATIO</value>
-<!--											TODO: change it when we add more code-->
 											<minimum>0.60</minimum>
 										</limit>
 									</limits>

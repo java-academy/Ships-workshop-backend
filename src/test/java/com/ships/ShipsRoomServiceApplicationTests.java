@@ -21,7 +21,7 @@ public class ShipsRoomServiceApplicationTests {
 	}
 
 	@Test
-	 public void testHomeMessage() {
+	 void testHomeMessage() {
 		// given
 		final String expectedMessage = "Welcome to Ships Backend";
 		// when
