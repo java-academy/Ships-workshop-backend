@@ -35,7 +35,6 @@ test:
 static analysis:
   stage: static analysis
   script:
-    - echo "Static analysis..."
     - mvn spotbugs:check
     - mvn pmd:check
     - mvn jacoco:check
@@ -46,14 +45,28 @@ package:
   image: maven:latest
   script:
     - mvn $MAVEN_CLI_OPTS package
-  only:
-    - master
 
 
-deploy:
+deploy develop:
   image: heroku:latest
   stage: deploy
   script:
+    - mvn $MAVEN_CLI_OPTS package
+    - docker build -t $HEROKU_APP_DEV .
+    - docker login -u _ -p $HEROKU_API_KEY registry.heroku.com
+    - heroku container:push --app $HEROKU_APP_DEV --context-path . web
+    - heroku container:release web --app $HEROKU_APP_DEV
+  only:
+    - branches
+  except:
+    - master
+
+
+deploy master:
+  image: heroku:latest
+  stage: deploy
+  script:
+    - mvn $MAVEN_CLI_OPTS package
     - docker build -t $HEROKU_APP .
     - docker login -u _ -p $HEROKU_API_KEY registry.heroku.com
     - heroku container:push --app $HEROKU_APP --context-path . web
