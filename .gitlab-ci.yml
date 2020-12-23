@@ -1,8 +1,3 @@
-image: docker:latest
-services:
-  - maven:latest
-
-
 stages:
   - build
   - test
@@ -12,7 +7,7 @@ stages:
 
 
 variables:
-  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end"
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
 cache:
@@ -21,13 +16,11 @@ cache:
     - target/
 
 build:
-  image: maven:latest
   stage: build
   script:
     - mvn $MAVEN_CLI_OPTS compile
 
 test:
-  image: maven:latest
   stage: test
   script:
     - mvn $MAVEN_CLI_OPTS test
@@ -35,23 +28,18 @@ test:
 static analysis:
   stage: static analysis
   script:
-    - mvn spotbugs:check
-    - mvn pmd:check
-    - mvn jacoco:check
+    - mvn $MAVEN_CLI_OPTS spotbugs:check pmd:check jacoco:check
 
 
 package:
   stage: package
-  image: maven:latest
   script:
     - mvn $MAVEN_CLI_OPTS package
 
 
 deploy develop:
-  image: heroku:latest
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS package
     - docker build -t $HEROKU_APP_DEV .
     - docker login -u _ -p $HEROKU_API_KEY registry.heroku.com
     - heroku container:push --app $HEROKU_APP_DEV --context-path . web
@@ -63,10 +51,8 @@ deploy develop:
 
 
 deploy master:
-  image: heroku:latest
   stage: deploy
   script:
-    - mvn $MAVEN_CLI_OPTS package
     - docker build -t $HEROKU_APP .
     - docker login -u _ -p $HEROKU_API_KEY registry.heroku.com
     - heroku container:push --app $HEROKU_APP --context-path . web
