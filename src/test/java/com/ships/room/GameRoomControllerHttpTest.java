@@ -14,8 +14,7 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.refEq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -25,7 +24,9 @@ import static org.testng.Assert.assertEquals;
 @WebMvcTest(GameRoomController.class)
 public class GameRoomControllerHttpTest {
     private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
-    private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_@");
+    private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
+    private static final String ROOM_API = "/room";
+    private static final String ROOM_WITH_PLAYER_NAME_API = ROOM_API + "/{name}";
     @Mock
     private GameRoomService gameRoomService;
 
@@ -39,47 +40,64 @@ public class GameRoomControllerHttpTest {
 
     @Test
     void shouldHttpGetReturnEmptyMessageWhenNobodyIsInRoom() throws Exception {
-        MvcResult mvcResult = this.mockMvc.perform(get("/room"))
+        MvcResult mvcResult = this.mockMvc.perform(get(ROOM_API))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
     @Test
     void shouldHttpGetReturnMessageWithTwoPlayersWhenTwoAreAlreadyInRoom() throws Exception {
         when(gameRoomService.getPlayerListInRoom()).thenReturn(List.of(DUMMY_PLAYER_1, DUMMY_PLAYER_2));
-        MvcResult mvcResult = this.mockMvc.perform(get("/room"))
+        MvcResult mvcResult = this.mockMvc.perform(get(ROOM_API))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value(DUMMY_PLAYER_1.getName()))
                 .andExpect(jsonPath("$[1].name").value(DUMMY_PLAYER_2.getName()))
                 .andReturn();
 
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
 
     @Test
-    public void shouldHttpDeleteReturnSuccess() throws Exception {
-        when(gameRoomService.deletePlayer(refEq(DUMMY_PLAYER_1))).thenReturn(RoomStatus.SUCCESS);
+    void shouldHttpDeleteReturnSuccess() throws Exception {
+        when(gameRoomService.deletePlayer(DUMMY_PLAYER_1.getName())).thenReturn(RoomStatus.SUCCESS);
         MvcResult mvcResult = this.mockMvc
-                .perform(delete(String.format("/room/%s", DUMMY_PLAYER_1.getName())))
+                .perform(delete(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(DUMMY_PLAYER_1.getName()))
+                .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
     @Test
-    public void shouldHttpDeleteReturnNoSuchPlayerMessage() throws Exception {
-        when(gameRoomService.deletePlayer(any())).thenReturn(RoomStatus.NO_SUCH_PLAYER);
+    void shouldAddPlayerReturnSuccessWhenRoomIsEmpty() throws Exception {
+        when(gameRoomService.addPlayer(DUMMY_PLAYER_2.getName())).thenReturn(RoomStatus.SUCCESS);
         MvcResult mvcResult = this.mockMvc
-                .perform(delete(String.format("/room/%s", DUMMY_PLAYER_1.getName())))
+                .perform(post(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_2.getName()))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$").doesNotExist())
+                .andExpect(header().string("Location", "http://localhost/room/DUMMY_NAME_2"))
+                .andReturn();
+
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
+    }
+
+    @Test
+    void shouldHttpDeleteReturnNoSuchPlayerMessage() throws Exception {
+        when(gameRoomService.deletePlayer(DUMMY_PLAYER_1.getName())).thenReturn(RoomStatus.NO_SUCH_PLAYER);
+        MvcResult mvcResult = this.mockMvc
+                .perform(delete(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(content().string(RoomStatus.NO_SUCH_PLAYER.val))
                 .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
     @Test
@@ -89,9 +107,9 @@ public class GameRoomControllerHttpTest {
                 .perform(delete("/room"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().json("[]"))
+                .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
     @Test
@@ -104,43 +122,19 @@ public class GameRoomControllerHttpTest {
                 .andExpect(jsonPath("$[0].name").value(DUMMY_PLAYER_1.getName()))
                 .andExpect(jsonPath("$[1].name").value(DUMMY_PLAYER_2.getName()))
                 .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
     @Test
-    public void shouldHttpGetReturnOnePlayer() throws Exception {
-        when(gameRoomService.isPlayerInRoom(DUMMY_PLAYER_1)).thenReturn(RoomStatus.SUCCESS);
+    void shouldHttpDeleteAllPlayersInARoom() throws Exception {
         MvcResult mvcResult = this.mockMvc
-                .perform(get(String.format("/room/%s", DUMMY_PLAYER_1.getName())))
+                .perform(delete(ROOM_API))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(DUMMY_PLAYER_1.getName()))
                 .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
-    }
 
-    @Test
-    public void shouldHttpGetReturnErrorStatus() throws Exception {
-        when(gameRoomService.isPlayerInRoom(DUMMY_PLAYER_1)).thenReturn(RoomStatus.NO_SUCH_PLAYER);
-        MvcResult mvcResult = this.mockMvc
-                .perform(get(String.format("/room/%s", DUMMY_PLAYER_1.getName())))
-                .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
-    }
-
-
-    @Test
-    public void shouldHttpPostReturnOkStatus() throws Exception {
-        when(gameRoomService.addPlayer(DUMMY_PLAYER_1)).thenReturn(RoomStatus.SUCCESS);
-        MvcResult mvcResult = this.mockMvc
-                .perform(post(String.format("/room/%s", DUMMY_PLAYER_1.getName())))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(DUMMY_PLAYER_1.getName()))
-                .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
+        verify(gameRoomService, times(1)).deleteAllPlayers();
     }
 
     @DataProvider
@@ -150,15 +144,14 @@ public class GameRoomControllerHttpTest {
     }
 
     @Test(dataProvider = "roomStatusErrors")
-    public void shouldHttpPostReturnErrorStatus(RoomStatus roomStatus) throws Exception {
-        when(gameRoomService.addPlayer(DUMMY_PLAYER_1)).thenReturn(roomStatus);
-        MvcResult mvcResult = this.mockMvc
-                .perform(post(String.format("/room/%s", DUMMY_PLAYER_1.getName())))
+    void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccurred(RoomStatus roomStatus) throws Exception {
+        when(gameRoomService.addPlayer(DUMMY_PLAYER_1.getName())).thenReturn(roomStatus);
+        MvcResult mvcResult = this.mockMvc.perform(post(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
                 .andExpect(status().isConflict())
+                .andExpect(header().string("Location", "http://localhost/room/DUMMY_NAME_1"))
+                .andExpect(content().string(roomStatus.val))
                 .andReturn();
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json;charset=UTF-8");
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
-
-
 }
