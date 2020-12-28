@@ -19,34 +19,42 @@ public class GameRoomServiceTest {
 
     @Test
     void shouldAddPlayerReturnSuccessStatusIfThereIsPlaceInRoom() {
-        assertEquals(sut.addPlayer(DUMMY_PLAYER_1), RoomStatus.SUCCESS);
+        assertEquals(sut.addPlayer(DUMMY_PLAYER_1.getName()), RoomStatus.SUCCESS);
     }
 
     @Test
     void shouldAddPlayerReturnNicknameDuplicationStatusWhenPersonInRoomHasThisNickname() {
-        sut.addPlayer(DUMMY_PLAYER_1);
-        assertEquals(sut.addPlayer(DUMMY_PLAYER_1), RoomStatus.NICKNAME_DUPLICATION);
+        sut.addPlayer(DUMMY_PLAYER_1.getName());
+        assertEquals(sut.addPlayer(DUMMY_PLAYER_1.getName()), RoomStatus.NICKNAME_DUPLICATION);
     }
 
     @Test
     void shouldAddPlayerReturnRoomIsFullStatusWhenPThereIsNotEnoughSpaceInRoom() {
-        sut.addPlayer(DUMMY_PLAYER_1);
-        sut.addPlayer(DUMMY_PLAYER_2);
-        assertEquals(sut.addPlayer(DUMMY_PLAYER_3), RoomStatus.ROOM_IS_FULL);
+        sut.addPlayer(DUMMY_PLAYER_1.getName());
+        sut.addPlayer(DUMMY_PLAYER_2.getName());
+        assertEquals(sut.addPlayer(DUMMY_PLAYER_3.getName()), RoomStatus.ROOM_IS_FULL);
     }
 
     @Test
     void shouldDeletePlayerReturnNoSuchPlayerStatusWhenTryingToRemovePlayerWithDifferentNicknameThanRoomMembers(){
-        sut.addPlayer(DUMMY_PLAYER_1);
-        sut.addPlayer(DUMMY_PLAYER_2);
-        assertEquals(sut.deletePlayer(DUMMY_PLAYER_3), RoomStatus.NO_SUCH_PLAYER);
+        sut.addPlayer(DUMMY_PLAYER_1.getName());
+        sut.addPlayer(DUMMY_PLAYER_2.getName());
+        assertEquals(sut.deletePlayer(DUMMY_PLAYER_3.getName()), RoomStatus.NO_SUCH_PLAYER);
+    }
+
+    @Test
+    void shouldDeleteAllPlayersInARoom(){
+        sut.addPlayer(DUMMY_PLAYER_1.getName());
+        sut.addPlayer(DUMMY_PLAYER_2.getName());
+        sut.deleteAllPlayers();
+        assertTrue(sut.getPlayerListInRoom().isEmpty());
     }
 
     @Test
     void shouldDeletePlayerReturnSuccessStatusWhenTryingToRemovePlayerWhoAreInRoom(){
-        sut.addPlayer(DUMMY_PLAYER_1);
+        sut.addPlayer(DUMMY_PLAYER_1.getName());
         SoftAssert sa = new SoftAssert();
-        sa.assertEquals(sut.deletePlayer(DUMMY_PLAYER_1), RoomStatus.SUCCESS, "Delete assert");
+        sa.assertEquals(sut.deletePlayer(DUMMY_PLAYER_1.getName()), RoomStatus.SUCCESS, "Delete assert");
         sa.assertTrue(sut.getPlayerListInRoom().isEmpty(), "Empty assert");
         sa.assertAll();
     }

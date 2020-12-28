@@ -14,21 +14,25 @@ class GameRoomService {
     private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);
 
 
-    RoomStatus addPlayer(Player player) {
-        RoomStatus result = checkIfAnotherPlayerCanBeAddedToRoom(player.getName());
+    RoomStatus addPlayer(String name) {
+        RoomStatus result = checkIfAnotherPlayerCanBeAddedToRoom(name);
         if(result == RoomStatus.SUCCESS) {
-            playerListInRoom.add(player);
+            playerListInRoom.add(new Player(name));
         }
         return result;
     }
 
-    RoomStatus deletePlayer(Player playerToDelete) {
+    RoomStatus deletePlayer(String name) {
         for(var player : playerListInRoom)
-            if(player.getName().equals(playerToDelete.getName())) {
+            if(player.getName().equals(name)) {
                 playerListInRoom.remove(player);
                 return RoomStatus.SUCCESS;
             }
         return RoomStatus.NO_SUCH_PLAYER;
+    }
+
+    void deleteAllPlayers() {
+        playerListInRoom.clear();
     }
 
     private RoomStatus checkIfAnotherPlayerCanBeAddedToRoom(String playersName) {
