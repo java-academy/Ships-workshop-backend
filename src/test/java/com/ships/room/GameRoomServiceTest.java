@@ -1,5 +1,6 @@
 package com.ships.room;
 
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
@@ -17,13 +18,18 @@ public class GameRoomServiceTest {
         sut = new GameRoomService();
     }
 
+    @AfterMethod
+    void deleteAllPlayers() {
+        sut.deleteAllPlayers();
+    }
+
     @Test
-    void shouldAddPlayerReturnSuccessStatusIfThereIsPlaceInRoom() {
+    public void shouldAddPlayerReturnSuccessStatusIfThereIsNeedForAnotherPlayer() {
         assertEquals(sut.addPlayer(DUMMY_PLAYER_1), RoomStatus.SUCCESS);
     }
 
     @Test
-    void shouldAddPlayerReturnNicknameDuplicationStatusWhenPersonInRoomHasThisNickname() {
+    public void shouldAddPlayerReturnNameDuplicationStatusWhenPersonInRoomHasThisNickname() {
         sut.addPlayer(DUMMY_PLAYER_1);
         assertEquals(sut.addPlayer(DUMMY_PLAYER_1), RoomStatus.NICKNAME_DUPLICATION);
     }
@@ -36,18 +42,42 @@ public class GameRoomServiceTest {
     }
 
     @Test
-    void shouldDeletePlayerReturnNoSuchPlayerStatusWhenTryingToRemovePlayerWithDifferentNicknameThanRoomMembers(){
+    public void shouldDeletePlayerReturnNoSuchPlayerStatusWhenTryingToRemovePlayerWithDifferentNicknameThanRoomMembers() {
         sut.addPlayer(DUMMY_PLAYER_1);
         sut.addPlayer(DUMMY_PLAYER_2);
         assertEquals(sut.deletePlayer(DUMMY_PLAYER_3), RoomStatus.NO_SUCH_PLAYER);
     }
 
     @Test
-    void shouldDeletePlayerReturnSuccessStatusWhenTryingToRemovePlayerWhoAreInRoom(){
+    public void shouldDeletePlayerReturnSuccessStatusWhenTryingToRemovePlayerWhoAreInRoom() {
         sut.addPlayer(DUMMY_PLAYER_1);
         SoftAssert sa = new SoftAssert();
         sa.assertEquals(sut.deletePlayer(DUMMY_PLAYER_1), RoomStatus.SUCCESS, "Delete assert");
         sa.assertTrue(sut.getPlayerListInRoom().isEmpty(), "Empty assert");
         sa.assertAll();
+    }
+
+    @Test
+    public void shouldDeleteAllPlayersReturnSuccessStatusWhenThereIsNoPlayerInRoom(){
+        sut.deleteAllPlayers();
+    }
+
+    @Test
+    public void shouldDeleteAllPlayersReturnSuccessStatusWhenThereAreNoPlayersInRoom(){
+        sut.addPlayer(DUMMY_PLAYER_1);
+        sut.addPlayer(DUMMY_PLAYER_3);
+        sut.deleteAllPlayers();
+    }
+
+    @Test
+    public void shouldReturnSuccessWhenAskingIfThePlayerIsInRoom(){
+        sut.addPlayer(DUMMY_PLAYER_1);
+        assertEquals(sut.isPlayerInRoom(DUMMY_PLAYER_1), RoomStatus.SUCCESS);
+    }
+
+    @Test
+    public void shouldReturnNoSuchPlayerWhenAskingIfThePlayerIsInRoom(){
+        sut.addPlayer(DUMMY_PLAYER_1);
+        assertEquals(sut.isPlayerInRoom(DUMMY_PLAYER_2), RoomStatus.NO_SUCH_PLAYER);
     }
 }

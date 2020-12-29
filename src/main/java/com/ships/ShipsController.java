@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 class ShipsController {
     @RequestMapping("/")
     String home() {
-        return "Welcome to Ships Backend";
+        return "Welcome to Room Service";
     }
 }

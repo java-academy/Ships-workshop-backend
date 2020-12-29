@@ -52,6 +52,10 @@
 		<version.org.tinylog>2.2.1</version.org.tinylog>
 		<version.spring.boot.starter>2.4.1</version.spring.boot.starter>
 		<version.spring.security.test>5.4.2</version.spring.security.test>
+		<version.spring.security.core>5.4.2</version.spring.security.core>
+		<version.spring.security.config>5.4.2</version.spring.security.config>
+		<version.spring.security.oauth2>2.5.0.RELEASE</version.spring.security.oauth2>
+
 	</properties>
 
 	<dependencies>
@@ -107,6 +111,24 @@
 			<artifactId>mockito-core</artifactId>
 			<version>${version.org.mockito.core}</version>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${version.spring.security.core}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${version.spring.security.config}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<version>${version.spring.security.oauth2}</version>
 		</dependency>
 	</dependencies>
 
