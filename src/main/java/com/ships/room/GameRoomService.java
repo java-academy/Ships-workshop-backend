@@ -33,10 +33,6 @@ class GameRoomService {
         return RoomStatus.NO_SUCH_PLAYER;
     }
 
-    private boolean isPlayerInRoom(String playersName){
-        return playerListInRoom.stream().anyMatch(p -> p.getName().equals(playersName));
-    }
-
     void deleteAllPlayers() {
         playerListInRoom.clear();
     }
@@ -46,7 +42,7 @@ class GameRoomService {
             Logger.info("New player is not added because room is full!");
             return RoomStatus.ROOM_IS_FULL;
         }
-        if (isPlayerInRoom(playersName)) {
+        if (playerListInRoom.stream().anyMatch(p -> p.getName().equals(playersName))) {
             Logger.info("There is a player with the same nickname!");
             return RoomStatus.NICKNAME_DUPLICATION;
         }
