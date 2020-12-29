@@ -1,10 +1,10 @@
 package com.ships.room;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
-@Getter
 @AllArgsConstructor
-class Player {
-    private final String name;
+@NoArgsConstructor
+@Data
+public class Player {
+    private String name;
 }

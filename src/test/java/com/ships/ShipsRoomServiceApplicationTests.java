@@ -23,7 +23,7 @@ public class ShipsRoomServiceApplicationTests {
 	@Test
 	 void testHomeMessage() {
 		// given
-		final String expectedMessage = "Welcome to Ships Backend";
+		final String expectedMessage = "Welcome to Room Service";
 		// when
 		final String homeMessage = new ShipsController().home();
 		// then
