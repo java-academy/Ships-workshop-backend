@@ -67,7 +67,7 @@ public class GameRoomControllerHttpTest {
         when(gameRoomService.deletePlayer(DUMMY_PLAYER_1.getName())).thenReturn(RoomStatus.SUCCESS);
         MvcResult mvcResult = this.mockMvc
                 .perform(delete(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
 
@@ -106,7 +106,7 @@ public class GameRoomControllerHttpTest {
         MvcResult mvcResult = this.mockMvc
                 .perform(delete("/room"))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
@@ -130,7 +130,7 @@ public class GameRoomControllerHttpTest {
         MvcResult mvcResult = this.mockMvc
                 .perform(delete(ROOM_API))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
                 .andReturn();
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");

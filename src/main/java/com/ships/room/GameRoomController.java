@@ -49,7 +49,7 @@ class GameRoomController {
         header.setContentType(MediaType.APPLICATION_JSON);
         RoomStatus result = gameRoomService.deletePlayer(name);
         if(result == RoomStatus.SUCCESS)
-            return new ResponseEntity<>(header, HttpStatus.OK);
+            return new ResponseEntity<>(header, HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(result.val, header, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
@@ -59,6 +59,6 @@ class GameRoomController {
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_JSON);
         gameRoomService.deleteAllPlayers();
-        return new ResponseEntity<>(header, HttpStatus.OK);
+        return new ResponseEntity<>(header, HttpStatus.NO_CONTENT);
     }
 }
