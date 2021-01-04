@@ -1,5 +1,6 @@
 package com.ships.room;
 
+import org.hamcrest.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
@@ -11,7 +12,6 @@ import org.testng.annotations.Test;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -86,7 +86,7 @@ public class GameRoomControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(header().string("Location", "http://localhost/room/DUMMY_NAME_1"))
-                .andExpect(content().string(roomStatus.val))
+                .andExpect(jsonPath("$", Matchers.is(roomStatus.name())))
                 .andReturn();
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
@@ -112,7 +112,7 @@ public class GameRoomControllerTest {
                 .perform(delete(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(RoomStatus.NO_SUCH_PLAYER.val))
+                .andExpect(jsonPath("$", Matchers.is(RoomStatus.NO_SUCH_PLAYER.name())))
                 .andReturn();
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");

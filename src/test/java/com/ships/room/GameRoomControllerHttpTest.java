@@ -1,5 +1,6 @@
 package com.ships.room;
 
+import org.hamcrest.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -95,7 +96,7 @@ public class GameRoomControllerHttpTest {
                 .perform(delete(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(content().string(RoomStatus.NO_SUCH_PLAYER.val))
+                .andExpect(jsonPath("$", Matchers.is(RoomStatus.NO_SUCH_PLAYER.name())))
                 .andReturn();
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
@@ -150,7 +151,7 @@ public class GameRoomControllerHttpTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andExpect(header().string("Location", "http://localhost/room/DUMMY_NAME_1"))
-                .andExpect(content().string(roomStatus.val))
+                .andExpect(jsonPath("$", Matchers.is(roomStatus.name())))
                 .andReturn();
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }

@@ -31,34 +31,34 @@ class GameRoomController {
         Logger.debug("Add {} to room", name);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(name).toUri();
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.APPLICATION_JSON);
-        header.setLocation(location);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setLocation(location);
 
         RoomStatus result = gameRoomService.addPlayer(name);
 
         if(result == RoomStatus.SUCCESS)
-            return new ResponseEntity<>(header, HttpStatus.CREATED);
-        return new ResponseEntity<>(result.val, header, HttpStatus.CONFLICT);
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{name}")
     ResponseEntity<?> removePlayerFromRoom(@PathVariable String name) {
         Logger.debug("Delete a player of name {}", name);
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.APPLICATION_JSON);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         RoomStatus result = gameRoomService.deletePlayer(name);
         if(result == RoomStatus.SUCCESS)
-            return new ResponseEntity<>(header, HttpStatus.NO_CONTENT);
-        return new ResponseEntity<>(result.val, header, HttpStatus.UNPROCESSABLE_ENTITY);
+            return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(result, headers, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @DeleteMapping
     ResponseEntity<?> removeAllPlayersFromRoom() {
         Logger.debug("Delete al players in room");
-        HttpHeaders header = new HttpHeaders();
-        header.setContentType(MediaType.APPLICATION_JSON);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         gameRoomService.deleteAllPlayers();
-        return new ResponseEntity<>(header, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 }
