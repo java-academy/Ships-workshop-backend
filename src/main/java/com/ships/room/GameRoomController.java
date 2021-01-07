@@ -20,7 +20,7 @@ class GameRoomController {
     private final GameRoomService gameRoomService;
 
     @GetMapping
-    public ResponseEntity<List<Player>> fetchPlayers() {
+    ResponseEntity<List<Player>> fetchPlayers() {
         Logger.debug("Get list of all players, No of players : {}",
                 gameRoomService.getPlayerListInRoom().size());
         return new ResponseEntity<>(gameRoomService.getPlayerListInRoom(), HttpStatus.OK);

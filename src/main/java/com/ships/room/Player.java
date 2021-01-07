@@ -4,7 +4,7 @@ import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class Player {
+@Getter
+class Player {
     private String name;
 }
