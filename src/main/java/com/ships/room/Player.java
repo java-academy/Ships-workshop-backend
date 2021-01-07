@@ -5,6 +5,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Player {
+class Player {
     private String name;
 }
