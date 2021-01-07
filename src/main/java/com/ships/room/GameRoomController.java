@@ -1,18 +1,21 @@
 package com.ships.room;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.tinylog.Logger;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
-//TODO: change origins to URL to frontend when pushing to master
-@CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping(value = "/room", produces = "application/json; charset=UTF-8")
+@RequestMapping(value = "/room", produces = "application/json")
 @AllArgsConstructor
+@CrossOrigin
 class GameRoomController {
     private final GameRoomService gameRoomService;
 
@@ -23,39 +26,39 @@ class GameRoomController {
         return new ResponseEntity<>(gameRoomService.getPlayerListInRoom(), HttpStatus.OK);
     }
 
-    @GetMapping("/{name}")
-    public ResponseEntity<?> fetchPlayer(@PathVariable String name) {
-        Logger.debug("Get one player of name {}", name);
-        Player player = new Player(name);
-        return handlePlayerResponse(player, gameRoomService.isPlayerInRoom(player), HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
     @PostMapping("/{name}")
-    public ResponseEntity<?> addPlayerToRoom(@PathVariable String name) {
-        Logger.debug("Add ", name);
-        Player player = new Player(name);
-        return handlePlayerResponse(player, gameRoomService.addPlayer(player), HttpStatus.CONFLICT);
+    ResponseEntity<?> addPlayerToRoom(@PathVariable String name) {
+        Logger.debug("Add {} to room", name);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(name).toUri();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setLocation(location);
+
+        RoomStatus result = gameRoomService.addPlayer(name);
+
+        if(result == RoomStatus.SUCCESS)
+            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<?> removePlayerFromRoom(@PathVariable String name) {
+    ResponseEntity<?> removePlayerFromRoom(@PathVariable String name) {
         Logger.debug("Delete a player of name {}", name);
-        Player player = new Player(name);
-        return handlePlayerResponse(player, gameRoomService.deletePlayer(player), HttpStatus.UNPROCESSABLE_ENTITY);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        RoomStatus result = gameRoomService.deletePlayer(name);
+        if(result == RoomStatus.SUCCESS)
+            return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(result, headers, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    @DeleteMapping()
-    public ResponseEntity<?> removeAllPlayersFromRoom() {
+    @DeleteMapping
+    ResponseEntity<?> removeAllPlayersFromRoom() {
         Logger.debug("Delete al players in room");
-        List<Player> removedPlayers = gameRoomService.getPlayerListInRoom();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         gameRoomService.deleteAllPlayers();
-        return new ResponseEntity<>(removedPlayers, HttpStatus.OK);
-    }
-
-    private ResponseEntity<?> handlePlayerResponse(Player player, RoomStatus result, HttpStatus errorHttpStatus) {
-        if (result == RoomStatus.SUCCESS) {
-            return new ResponseEntity<>(player, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(result.val, errorHttpStatus);
+        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 }
