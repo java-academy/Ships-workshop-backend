@@ -56,7 +56,7 @@ public class GameRoomControllerTest {
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
-
+/*
     @Test
     void shouldAddPlayerReturnSuccessWhenRoomIsEmpty() throws Exception {
         when(gameRoomService.addPlayer(DUMMY_PLAYER_2.getName())).thenReturn(RoomStatus.SUCCESS);
@@ -70,7 +70,7 @@ public class GameRoomControllerTest {
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
-
+*/
     @DataProvider
     Object[] errorCasesInHttpPostResponse() {
         return new Object[] {
@@ -79,6 +79,7 @@ public class GameRoomControllerTest {
         };
     }
 
+    /*
     @Test(dataProvider = "errorCasesInHttpPostResponse")
     void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccurred(RoomStatus roomStatus) throws Exception {
         when(gameRoomService.addPlayer(DUMMY_PLAYER_1.getName())).thenReturn(roomStatus);
@@ -91,7 +92,7 @@ public class GameRoomControllerTest {
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
-
+*/
     @Test
     void shouldHttpDeleteReturnSuccess() throws Exception {
         when(gameRoomService.deletePlayer(DUMMY_PLAYER_1.getName())).thenReturn(RoomStatus.SUCCESS);

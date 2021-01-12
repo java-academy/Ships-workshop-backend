@@ -13,15 +13,6 @@ class GameRoomService {
     @Getter
     private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);
 
-    RoomStatus addPlayer(String name) {
-        RoomStatus result = checkIfPlayerCanBeAddedToRoom(name);
-        if(result == RoomStatus.SUCCESS) {
-            Logger.debug(" {} successfully added to the room", name);
-            playerListInRoom.add(new Player(name));
-        }
-        return result;
-    }
-
     RoomStatus deletePlayer(String name) {
         for(var player : playerListInRoom)
             if(player.getName().equals(name)) {
@@ -37,7 +28,7 @@ class GameRoomService {
         playerListInRoom.clear();
     }
 
-    private RoomStatus checkIfPlayerCanBeAddedToRoom(String playersName) {
+    RoomStatus checkIfPlayerCanBeAddedToRoom(String playersName) {
         if(playerListInRoom.size() == MAX_PLAYERS_IN_ROOM) {
             Logger.info("New player is not added because room is full!");
             return RoomStatus.ROOM_IS_FULL;

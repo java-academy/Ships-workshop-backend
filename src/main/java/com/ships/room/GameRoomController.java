@@ -11,7 +11,6 @@ import org.tinylog.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
 import java.net.URI;
 import java.util.List;
 
@@ -23,9 +22,14 @@ class GameRoomController {
     private final GameRoomService gameRoomService;
 
     @GetMapping
-    ResponseEntity<List<Player>> fetchPlayers() {
+    ResponseEntity<List<Player>> fetchPlayers(HttpServletRequest req) {
         Logger.debug("Get list of all players, No of players : {}",
                 gameRoomService.getPlayerListInRoom().size());
+
+        HttpSession session = req.getSession(false);
+        if(null != session)
+            session.setMaxInactiveInterval(10);
+
         return new ResponseEntity<>(gameRoomService.getPlayerListInRoom(), HttpStatus.OK);
     }
 
@@ -38,17 +42,15 @@ class GameRoomController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setLocation(location);
 
-        RoomStatus result = gameRoomService.addPlayer(name);
-
-        if (result == RoomStatus.SUCCESS) {
-
-            HttpSession session = req.getSession(true);
-            session.setAttribute("name", name);
-            session.setMaxInactiveInterval(10);
-
-            return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        RoomStatus result = gameRoomService.checkIfPlayerCanBeAddedToRoom(name);
+        if (result != RoomStatus.SUCCESS) {
+            return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
         }
-        return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
+        HttpSession session = req.getSession(true);
+        LoggedPlayer user = new LoggedPlayer(name, gameRoomService);
+        session.setAttribute("user", user);
+        session.setMaxInactiveInterval(10);
+        return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{name}")

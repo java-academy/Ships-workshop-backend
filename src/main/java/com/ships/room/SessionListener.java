@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
+
 @WebListener
 public class SessionListener implements HttpSessionListener {
 
@@ -20,3 +21,4 @@ public class SessionListener implements HttpSessionListener {
         System.out.println("-- XXXXXX#sessionDestroyed invoked --");
     }
 }
+
