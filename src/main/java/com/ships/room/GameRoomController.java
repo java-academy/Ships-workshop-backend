@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.tinylog.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
 import java.net.URI;
 import java.util.List;
 
@@ -27,7 +30,7 @@ class GameRoomController {
     }
 
     @PostMapping("/{name}")
-    ResponseEntity<?> addPlayerToRoom(@PathVariable String name) {
+    ResponseEntity<?> addPlayerToRoom(@PathVariable String name, HttpServletRequest req) {
         Logger.debug("Add {} to room", name);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(name).toUri();
@@ -37,8 +40,14 @@ class GameRoomController {
 
         RoomStatus result = gameRoomService.addPlayer(name);
 
-        if(result == RoomStatus.SUCCESS)
+        if (result == RoomStatus.SUCCESS) {
+
+            HttpSession session = req.getSession(true);
+            session.setAttribute("name", name);
+            session.setMaxInactiveInterval(10);
+
             return new ResponseEntity<>(headers, HttpStatus.CREATED);
+        }
         return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
     }
 
@@ -48,7 +57,7 @@ class GameRoomController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         RoomStatus result = gameRoomService.deletePlayer(name);
-        if(result == RoomStatus.SUCCESS)
+        if (result == RoomStatus.SUCCESS)
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(result, headers, HttpStatus.UNPROCESSABLE_ENTITY);
     }
