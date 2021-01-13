@@ -1,7 +1,6 @@
 package com.ships.room;
 
 import lombok.Getter;
-import org.springframework.stereotype.Component;
 import org.tinylog.Logger;
 
 import javax.servlet.annotation.WebListener;
@@ -11,11 +10,10 @@ import java.util.List;
 
 @WebListener
 public class LoggedPlayer implements HttpSessionBindingListener {
-    @Getter
     private String name;
     private GameRoomService gameRoomService;
 
-    public LoggedPlayer(String name, GameRoomService gameRoomService) {
+    LoggedPlayer(String name, GameRoomService gameRoomService) {
         this.name = name;
         this.gameRoomService = gameRoomService;
     }
@@ -24,22 +22,19 @@ public class LoggedPlayer implements HttpSessionBindingListener {
 
     @Override
     public void valueBound(HttpSessionBindingEvent event) {
-        System.out.println("BORYS BOUND");
         LoggedPlayer loggedPlayer = (LoggedPlayer) event.getValue();
-        List<Player> playerListInRoom = gameRoomService.getPlayerListInRoom();
-        Player player = new Player(name);
-        if (!playerListInRoom.contains(player)) {
-            playerListInRoom.add(player);
-            Logger.debug(" {} successfully added to the room", player.getName());
-        }
+        List<Player> playerListInRoom = loggedPlayer.gameRoomService.getPlayerListInRoom();
+        Player player = new Player(loggedPlayer.name);
+        playerListInRoom.add(player);
+        Logger.debug("Successfully added {}'s session", player.getName());
     }
 
     @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
-        System.out.println("BORYS UNBOUND");
-        List<Player> playerListInRoom = gameRoomService.getPlayerListInRoom();
         LoggedPlayer loggedPlayer = (LoggedPlayer) event.getValue();
-        System.out.println(loggedPlayer.getName());
-        playerListInRoom.remove(new Player(loggedPlayer.getName()));
+        List<Player> playerListInRoom = loggedPlayer.gameRoomService.getPlayerListInRoom();
+        Player player = new Player(loggedPlayer.name);
+        playerListInRoom.remove(player);
+        Logger.debug("Successfully removed {}'s session", player.getName());
     }
 }

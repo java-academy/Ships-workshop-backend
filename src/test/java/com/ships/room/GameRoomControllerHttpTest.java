@@ -12,6 +12,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -75,10 +76,9 @@ public class GameRoomControllerHttpTest {
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
-    /*
     @Test
     void shouldAddPlayerReturnSuccessWhenRoomIsEmpty() throws Exception {
-        when(gameRoomService.addPlayer(DUMMY_PLAYER_2.getName())).thenReturn(RoomStatus.SUCCESS);
+        when(gameRoomService.addPlayer(eq(DUMMY_PLAYER_2.getName()), any())).thenReturn(RoomStatus.SUCCESS);
         MvcResult mvcResult = this.mockMvc
                 .perform(post(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_2.getName()))
                 .andDo(print())
@@ -89,7 +89,7 @@ public class GameRoomControllerHttpTest {
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
-*/
+
     @Test
     void shouldHttpDeleteReturnNoSuchPlayerMessage() throws Exception {
         when(gameRoomService.deletePlayer(DUMMY_PLAYER_1.getName())).thenReturn(RoomStatus.NO_SUCH_PLAYER);
@@ -145,10 +145,10 @@ public class GameRoomControllerHttpTest {
                 {RoomStatus.ROOM_IS_FULL}};
     }
 
-    /*
+
     @Test(dataProvider = "roomStatusErrors")
     void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccurred(RoomStatus roomStatus) throws Exception {
-        when(gameRoomService.addPlayer(DUMMY_PLAYER_1.getName())).thenReturn(roomStatus);
+        when(gameRoomService.addPlayer(eq(DUMMY_PLAYER_1.getName()), any())).thenReturn(roomStatus);
         MvcResult mvcResult = this.mockMvc.perform(post(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
                 .andExpect(status().isConflict())
@@ -158,5 +158,4 @@ public class GameRoomControllerHttpTest {
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
 
-     */
 }

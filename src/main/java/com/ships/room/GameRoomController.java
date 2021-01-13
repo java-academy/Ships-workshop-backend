@@ -35,21 +35,16 @@ class GameRoomController {
 
     @PostMapping("/{name}")
     ResponseEntity<?> addPlayerToRoom(@PathVariable String name, HttpServletRequest req) {
-        Logger.debug("Add {} to room", name);
+        Logger.debug("Adding {} to room", name);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(name).toUri();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setLocation(location);
 
-        RoomStatus result = gameRoomService.checkIfPlayerCanBeAddedToRoom(name);
-        if (result != RoomStatus.SUCCESS) {
+        RoomStatus result = gameRoomService.addPlayer(name, req);
+        if (result != RoomStatus.SUCCESS)
             return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
-        }
-        HttpSession session = req.getSession(true);
-        LoggedPlayer user = new LoggedPlayer(name, gameRoomService);
-        session.setAttribute("user", user);
-        session.setMaxInactiveInterval(10);
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
@@ -66,7 +61,7 @@ class GameRoomController {
 
     @DeleteMapping
     ResponseEntity<?> removeAllPlayersFromRoom() {
-        Logger.debug("Delete al players in room");
+        Logger.debug("Delete all the players in the room");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         gameRoomService.deleteAllPlayers();
