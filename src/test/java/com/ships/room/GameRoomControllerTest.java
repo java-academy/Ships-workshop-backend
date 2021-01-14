@@ -3,6 +3,7 @@ package com.ships.room;
 import org.hamcrest.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -18,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.testng.Assert.assertEquals;
 
+@WebMvcTest(GameRoomController.class)
 public class GameRoomControllerTest {
     private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
     private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
@@ -125,6 +127,7 @@ public class GameRoomControllerTest {
                 .perform(delete(ROOM_API))
                 .andDo(print())
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");

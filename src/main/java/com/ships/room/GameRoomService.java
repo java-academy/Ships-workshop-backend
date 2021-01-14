@@ -11,7 +11,8 @@ import java.util.List;
 
 @Service
 class GameRoomService {
-    private static final int MAX_PLAYERS_IN_ROOM = 2;
+    static final int MAX_PLAYERS_IN_ROOM = 2;
+    static final int MAX_INACTIVE_INTERVAL_IN_ROOM = 30;
     @Getter
     private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);
 
@@ -20,7 +21,8 @@ class GameRoomService {
         if(result == RoomStatus.SUCCESS) {
             LoggedPlayer user = new LoggedPlayer(name, this);
             HttpSession session = req.getSession(true);
-            session.setMaxInactiveInterval(10);
+            Logger.info("BORYS PLAYER: " + name + " WITH ASSIGNED SESSION ID: " + session.getId());
+            session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL_IN_ROOM);
             session.setAttribute("user", user);
         }
         return result;

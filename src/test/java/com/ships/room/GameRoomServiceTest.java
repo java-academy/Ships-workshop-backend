@@ -2,6 +2,7 @@ package com.ships.room;
 
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -11,6 +12,7 @@ import org.testng.asserts.SoftAssert;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+@SpringBootTest
 public class GameRoomServiceTest {
     private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
     private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
@@ -77,39 +79,23 @@ public class GameRoomServiceTest {
 
     @Test
     public void shouldDeleteAllPlayersReturnSuccessStatusWhenThereAreNoPlayersInRoom(){
-        var secondHttpServletReq = new MockHttpServletRequest();
         sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
-        sut.addPlayer(DUMMY_PLAYER_3.getName(), secondHttpServletReq);
         sut.deleteAllPlayers();
-        sa.assertTrue(sut.getPlayerListInRoom().isEmpty(), " empty playerListInRoom");
+        sa.assertTrue(sut.getPlayerListInRoom().isEmpty(), " empty playerListInRoom assertion: ");
         sa.assertEquals(sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest),
                 RoomStatus.DUPLICATED_SESSION,
-                " duplicated session");
-        mockHttpServletRequest.getSession().invalidate();
-        mockHttpServletRequest.getSession().invalidate();
+                " duplicated session assertion: ");
+        LoggedPlayer loggedPlayer = (LoggedPlayer) mockHttpServletRequest.getSession().getAttribute("user");
+        loggedPlayer.removeOnlySession();
+        mockHttpServletRequest.getSession().setAttribute("user", loggedPlayer);
         sa.assertEquals(sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest),
                 RoomStatus.SUCCESS,
-                " success");
+                " succes assertion: ");
         sa.assertAll();
     }
 
     @Test
-    public void shouldFetchPlayersReturnEmptyListBecauseOfUsersSessionInvalidation(){
-        sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
-        mockHttpServletRequest.getSession().invalidate();
-        assertTrue(sut.getPlayerListInRoom().isEmpty());
-    }
-
-    @Test
-    void shouldFetchPlayersReturnOneElementListBecauseOfUsersSessionInvalidation() {
-        sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
-        sut.addPlayer(DUMMY_PLAYER_3.getName(), new MockHttpServletRequest());
-        mockHttpServletRequest.getSession().invalidate();
-        assertEquals(sut.getPlayerListInRoom().size(), 1);
-    }
-
-    @Test
-    void should() {
+    void shouldNotLetToEnterSeveralUsersWithSameHttpSession() {
         sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
         sut.addPlayer(DUMMY_PLAYER_3.getName(), mockHttpServletRequest);
         assertEquals(sut.getPlayerListInRoom().size(), 1);

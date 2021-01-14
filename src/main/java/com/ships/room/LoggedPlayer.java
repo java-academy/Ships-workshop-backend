@@ -1,6 +1,6 @@
 package com.ships.room;
 
-import lombok.Getter;
+import lombok.Setter;
 import org.tinylog.Logger;
 
 import javax.servlet.annotation.WebListener;
@@ -12,13 +12,20 @@ import java.util.List;
 public class LoggedPlayer implements HttpSessionBindingListener {
     private String name;
     private GameRoomService gameRoomService;
+    @Setter
+    private boolean shouldSessionBeOnlyRemovedDuringUnbound = false;
 
     LoggedPlayer(String name, GameRoomService gameRoomService) {
         this.name = name;
         this.gameRoomService = gameRoomService;
     }
 
-    public LoggedPlayer() {}
+    public LoggedPlayer() {
+    }
+
+    void removeOnlySession() {
+        shouldSessionBeOnlyRemovedDuringUnbound = true;
+    }
 
     @Override
     public void valueBound(HttpSessionBindingEvent event) {
@@ -26,15 +33,19 @@ public class LoggedPlayer implements HttpSessionBindingListener {
         List<Player> playerListInRoom = loggedPlayer.gameRoomService.getPlayerListInRoom();
         Player player = new Player(loggedPlayer.name);
         playerListInRoom.add(player);
-        Logger.debug("Successfully added {}'s session", player.getName());
+        Logger.debug("Successfully added session with event name: '{}' of player '{}'", event.getName(), player.getName());
     }
 
     @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
         LoggedPlayer loggedPlayer = (LoggedPlayer) event.getValue();
+        if (loggedPlayer.shouldSessionBeOnlyRemovedDuringUnbound) {
+            Logger.debug("Session '{}' has been removed", event.getName());
+            return;
+        }
         List<Player> playerListInRoom = loggedPlayer.gameRoomService.getPlayerListInRoom();
         Player player = new Player(loggedPlayer.name);
         playerListInRoom.remove(player);
-        Logger.debug("Successfully removed {}'s session", player.getName());
+        Logger.debug("Successfully removed player: '{}' with bounded session", player.getName());
     }
 }
