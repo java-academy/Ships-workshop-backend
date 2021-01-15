@@ -14,12 +14,15 @@ import static org.testng.Assert.assertTrue;
 
 @SpringBootTest
 public class GameRoomServiceTest {
-    private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
-    private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
-    private static final Player DUMMY_PLAYER_3 = new Player("DUMMY_NAME_3");
+    private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1", "DUMMY_ID_1");
+    private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2", "DUMMY_ID_2");
+    private static final Player DUMMY_PLAYER_3 = new Player("DUMMY_NAME_3", "DUMMY_ID_3");
     private GameRoomService sut;
     @Mock
     private MockHttpServletRequest mockHttpServletRequest;
+
+    @Mock
+    SessionContainer sessionContainerMock;
     SoftAssert sa;
 
 
@@ -27,7 +30,7 @@ public class GameRoomServiceTest {
     void init() {
         MockitoAnnotations.openMocks(this);
         mockHttpServletRequest = new MockHttpServletRequest();
-        sut = new GameRoomService();
+        sut = new GameRoomService(sessionContainerMock);
         sa = new SoftAssert();
     }
 

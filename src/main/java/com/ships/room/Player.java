@@ -8,4 +8,5 @@ import lombok.*;
 @EqualsAndHashCode
 class Player {
     private String name;
+    private String jSessionId;
 }

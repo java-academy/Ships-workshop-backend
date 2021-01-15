@@ -21,8 +21,8 @@ import static org.testng.Assert.assertEquals;
 
 @WebMvcTest(GameRoomController.class)
 public class GameRoomControllerTest {
-    private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
-    private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
+    private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1", "DUMMY_ID_1");
+    private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2", "DUMMY_ID_2");
     private static final String ROOM_API = "/room";
     private static final String ROOM_WITH_PLAYER_NAME_API = ROOM_API + "/{name}";
     @Mock

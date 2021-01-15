@@ -1,6 +1,7 @@
 package com.ships.room;
 
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tinylog.Logger;
 
@@ -12,17 +13,29 @@ import java.util.List;
 @Service
 class GameRoomService {
     static final int MAX_PLAYERS_IN_ROOM = 2;
-    static final int MAX_INACTIVE_INTERVAL_IN_ROOM = 30;
+    static final int MAX_INACTIVE_INTERVAL_IN_ROOM = 10;
     @Getter
     private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);
+
+    private final SessionContainer sessionContainer;
+
+    @Autowired
+    GameRoomService(SessionContainer sessionContainer) {
+        this.sessionContainer = sessionContainer;
+    }
+
+    HttpSession getSession(String jSessionId) {
+        return sessionContainer.getSession(jSessionId);
+    }
 
     RoomStatus addPlayer(String name, HttpServletRequest req) {
         RoomStatus result = checkIfPlayerCanBeAddedToRoom(name, req);
         if(result == RoomStatus.SUCCESS) {
-            LoggedPlayer user = new LoggedPlayer(name, this);
             HttpSession session = req.getSession(true);
             Logger.info("BORYS PLAYER: " + name + " WITH ASSIGNED SESSION ID: " + session.getId());
             session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL_IN_ROOM);
+            sessionContainer.putSession(session.getId(), session);
+            LoggedPlayer user = new LoggedPlayer(new Player(name, session.getId()), this, sessionContainer);
             session.setAttribute("user", user);
         }
         return result;
