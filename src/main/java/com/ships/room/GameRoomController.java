@@ -10,9 +10,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.tinylog.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -1,6 +1,5 @@
 package com.ships.room;
 
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -15,7 +14,6 @@ import java.util.Map;
 import static com.ships.room.GameRoomService.EMPTY_TOKEN;
 import static com.ships.room.GameRoomService.MAX_INACTIVE_INTERVAL_IN_ROOM;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -25,12 +23,9 @@ public class GameRoomServiceTest {
     private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
     private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
     private static final Player DUMMY_PLAYER_3 = new Player("DUMMY_NAME_3");
-    private static final String DUMMY_TOKEN_1 = "DUMMY_TOKEN_1";
-    private static final String DUMMY_TOKEN_2 = "DUMMY_TOKEN_2";
-    private static final String DUMMY_TOKEN_3 = "DUMMY_TOKEN_3";
+    private static final String DUMMY_TOKEN = "DUMMY_TOKEN";
     private GameRoomService sut;
     private MockHttpServletRequest mockHttpServletRequest;
-    private MockHttpSession mockHttpSession;
 
     SoftAssert sa;
 
@@ -43,7 +38,6 @@ public class GameRoomServiceTest {
         MockitoAnnotations.openMocks(this);
         sut = new GameRoomService();
         mockHttpServletRequest = new MockHttpServletRequest();
-        mockHttpSession = new MockHttpSession();
         sa = new SoftAssert();
     }
 
@@ -57,10 +51,10 @@ public class GameRoomServiceTest {
         MockHttpServletRequest mockHttpServletRequestMock = mock(MockHttpServletRequest.class);
         MockHttpSession mockHttpSessionMock = mock(MockHttpSession.class);
         when(mockHttpServletRequestMock.getSession(true)).thenReturn(mockHttpSessionMock);
-        when(mockHttpSessionMock.getId()).thenReturn(DUMMY_TOKEN_1);
+        when(mockHttpSessionMock.getId()).thenReturn(DUMMY_TOKEN);
 
         assertEquals(sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequestMock),
-                createAddPlayerResult(RoomStatus.SUCCESS, DUMMY_TOKEN_1));
+                createAddPlayerResult(RoomStatus.SUCCESS, DUMMY_TOKEN));
     }
 
     @Test
