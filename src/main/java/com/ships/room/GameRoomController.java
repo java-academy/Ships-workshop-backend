@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
 
 @RestController
 @RequestMapping(value = "/room", produces = "application/json")
@@ -23,26 +25,10 @@ class GameRoomController {
     private final GameRoomService gameRoomService;
 
     @GetMapping
-    ResponseEntity<?> fetchPlayers(/*@RequestHeader("Authorization") String auth,*/ HttpServletRequest req) {
-        int numberOfPlayers = gameRoomService.getPlayerListInRoom().size();
-        Logger.debug("Get list of all players, No of players : {}", numberOfPlayers);
-
-        //Logger.info("BORYS HEADER: " + auth);
-        //HttpSession session = gameRoomService.getSession(auth);
-        HttpSession session = req.getSession(false);
-
-        Logger.info("BORYS SESSION: " + session);
-        if (null != session) {
-            Logger.info("BORYS MAMY SESJE");
-            if (GameRoomService.MAX_PLAYERS_IN_ROOM == numberOfPlayers) {
-                Logger.info("BORYS RESET");
-                LoggedPlayer loggedPlayer = (LoggedPlayer) session.getAttribute("user");
-                loggedPlayer.removeOnlySession();
-            } else
-                session.setMaxInactiveInterval(GameRoomService.MAX_INACTIVE_INTERVAL_IN_ROOM);
-        }
-
-        return new ResponseEntity<>(gameRoomService.getPlayerListInRoom().stream().map(Player::getName).collect(Collectors.toList()), HttpStatus.OK);
+    ResponseEntity<?> fetchPlayers(HttpServletRequest req) {
+        List<Player> playerList = gameRoomService.getPlayerListInRoom();
+        Logger.debug("Get list of all players, No of players : {}", playerList.size());
+        return new ResponseEntity<>(gameRoomService.updateSession(req) ? playerList : emptyList(), HttpStatus.OK);
     }
 
     @PostMapping("/{name}")
@@ -53,15 +39,12 @@ class GameRoomController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setLocation(location);
-        RoomStatus result = gameRoomService.addPlayer(name, req);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("status", result.name());
-        response.put("token", req.getSession(false).getId());
-
-        if (result != RoomStatus.SUCCESS)
-            return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
-        return new ResponseEntity<>(response, headers, HttpStatus.CREATED);
+        Map<String,String> result = gameRoomService.addPlayer(name, req);
+        String status = result.get("status");
+        if (status.equals(RoomStatus.SUCCESS.name()))
+            return new ResponseEntity<>(result, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(status, headers, HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{name}")

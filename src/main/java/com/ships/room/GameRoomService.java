@@ -8,37 +8,46 @@ import org.tinylog.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 class GameRoomService {
     static final int MAX_PLAYERS_IN_ROOM = 2;
     static final int MAX_INACTIVE_INTERVAL_IN_ROOM = 10;
+    static final String EMPTY_TOKEN = "EMPTY";
+
     @Getter
     private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);
 
-    private final SessionContainer sessionContainer;
-
-    @Autowired
-    GameRoomService(SessionContainer sessionContainer) {
-        this.sessionContainer = sessionContainer;
+    boolean updateSession(HttpServletRequest req) {
+        int numberOfPlayers = playerListInRoom.size();
+        Logger.debug("No of players in playerListInRoom: {}", numberOfPlayers);
+        HttpSession session = req.getSession(false);
+        if (null == session) {
+            Logger.error("Session is null!");
+            return false ;
+        }
+        if (GameRoomService.MAX_PLAYERS_IN_ROOM == numberOfPlayers) {
+            LoggedPlayer loggedPlayer = (LoggedPlayer) session.getAttribute("user");
+            loggedPlayer.removeOnlySession();
+        } else
+            session.setMaxInactiveInterval(GameRoomService.MAX_INACTIVE_INTERVAL_IN_ROOM);
+        return true;
     }
 
-    HttpSession getSession(String jSessionId) {
-        return sessionContainer.getSession(jSessionId);
-    }
-
-    RoomStatus addPlayer(String name, HttpServletRequest req) {
+    Map<String, String> addPlayer(String name, HttpServletRequest req) {
         RoomStatus result = checkIfPlayerCanBeAddedToRoom(name, req);
+        String token = EMPTY_TOKEN;
         if(result == RoomStatus.SUCCESS) {
             HttpSession session = req.getSession(true);
-            Logger.info("BORYS PLAYER: " + name + " WITH ASSIGNED SESSION ID: " + session.getId());
             session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL_IN_ROOM);
-            sessionContainer.putSession(session.getId(), session);
-            LoggedPlayer user = new LoggedPlayer(new Player(name, session.getId()), this, sessionContainer);
+            LoggedPlayer user = new LoggedPlayer(new Player(name), this);
             session.setAttribute("user", user);
+            token = session.getId();
         }
-        return result;
+        return Map.of("status", result.name(), "token", token);
     }
 
     RoomStatus deletePlayer(String name) {

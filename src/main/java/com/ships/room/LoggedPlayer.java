@@ -12,14 +12,12 @@ import java.util.List;
 public class LoggedPlayer implements HttpSessionBindingListener {
     private Player player;
     private GameRoomService gameRoomService;
-    private SessionContainer sessionContainer;
     @Setter
     private boolean shouldSessionBeOnlyRemovedDuringUnbound = false;
 
-    LoggedPlayer(Player player, GameRoomService gameRoomService, SessionContainer sessionContainer) {
+    LoggedPlayer(Player player, GameRoomService gameRoomService) {
         this.player = player;
         this.gameRoomService = gameRoomService;
-        this.sessionContainer = sessionContainer;
     }
 
     public LoggedPlayer() {
@@ -49,6 +47,5 @@ public class LoggedPlayer implements HttpSessionBindingListener {
         Player player = loggedPlayer.player;
         playerListInRoom.remove(player);
         Logger.debug("Successfully removed player: '{}' with bounded session", player.getName());
-        sessionContainer.removeSession(player.getJSessionId());
     }
 }
