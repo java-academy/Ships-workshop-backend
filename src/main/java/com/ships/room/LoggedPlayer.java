@@ -6,10 +6,11 @@ import org.tinylog.Logger;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
+import java.io.Serializable;
 import java.util.List;
 
 @WebListener
-public class LoggedPlayer implements HttpSessionBindingListener {
+public class LoggedPlayer implements HttpSessionBindingListener, Serializable {
     private Player player;
     private GameRoomService gameRoomService;
     @Setter
@@ -40,7 +41,7 @@ public class LoggedPlayer implements HttpSessionBindingListener {
     public void valueUnbound(HttpSessionBindingEvent event) {
         LoggedPlayer loggedPlayer = (LoggedPlayer) event.getValue();
         if (loggedPlayer.shouldSessionBeOnlyRemovedDuringUnbound) {
-            Logger.debug("Session '{}' has been removed", event.getName());
+            Logger.debug("{}'s session has been removed!", loggedPlayer.player.getName());
             return;
         }
         List<Player> playerListInRoom = loggedPlayer.gameRoomService.getPlayerListInRoom();

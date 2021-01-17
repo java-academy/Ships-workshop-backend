@@ -6,12 +6,13 @@ import org.tinylog.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Service
-class GameRoomService {
+class GameRoomService implements Serializable {
     static final int MAX_PLAYERS_IN_ROOM = 2;
     static final int MAX_INACTIVE_INTERVAL_IN_ROOM = 10;
     static final String EMPTY_TOKEN = "EMPTY";
