@@ -25,7 +25,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("https://kamil-jankowski.github.io/ShipsFrontend"));
+        configuration.setAllowedOrigins(List.of("https://kamil-jankowski.github.io"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
