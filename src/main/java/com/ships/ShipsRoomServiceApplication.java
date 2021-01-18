@@ -2,12 +2,14 @@ package com.ships;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.tinylog.Logger;
 
 /**
  * Main class responsible for start an application.
  */
 @SpringBootApplication
+@ServletComponentScan
 class ShipsRoomServiceApplication {
 
 	/**

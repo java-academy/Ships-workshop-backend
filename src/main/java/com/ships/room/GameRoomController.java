@@ -9,37 +9,40 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.tinylog.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.Collections.emptyList;
 
 @RestController
 @RequestMapping(value = "/room", produces = "application/json")
 @AllArgsConstructor
-@CrossOrigin
 class GameRoomController {
     private final GameRoomService gameRoomService;
 
     @GetMapping
-    ResponseEntity<List<Player>> fetchPlayers() {
-        Logger.debug("Get list of all players, No of players : {}",
-                gameRoomService.getPlayerListInRoom().size());
-        return new ResponseEntity<>(gameRoomService.getPlayerListInRoom(), HttpStatus.OK);
+    ResponseEntity<?> fetchPlayers(HttpServletRequest req) {
+        List<Player> playerList = gameRoomService.getPlayerListInRoom();
+        Logger.debug("Get list of all players, No of players : {}", playerList.size());
+        return new ResponseEntity<>(gameRoomService.updateSession(req) ? playerList : emptyList(), HttpStatus.OK);
     }
 
     @PostMapping("/{name}")
-    ResponseEntity<?> addPlayerToRoom(@PathVariable String name) {
-        Logger.debug("Add {} to room", name);
+    ResponseEntity<?> addPlayerToRoom(@PathVariable String name, HttpServletRequest req) {
+        Logger.debug("Adding {} to room", name);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().buildAndExpand(name).toUri();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setLocation(location);
 
-        RoomStatus result = gameRoomService.addPlayer(name);
-
-        if(result == RoomStatus.SUCCESS)
-            return new ResponseEntity<>(headers, HttpStatus.CREATED);
-        return new ResponseEntity<>(result, headers, HttpStatus.CONFLICT);
+        Map<String,String> result = gameRoomService.addPlayer(name, req);
+        String status = result.get("status");
+        if (status.equals(RoomStatus.SUCCESS.name()))
+            return new ResponseEntity<>(result, headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(status, headers, HttpStatus.CONFLICT);
     }
 
     @DeleteMapping("/{name}")
@@ -48,14 +51,14 @@ class GameRoomController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         RoomStatus result = gameRoomService.deletePlayer(name);
-        if(result == RoomStatus.SUCCESS)
+        if (result == RoomStatus.SUCCESS)
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(result, headers, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @DeleteMapping
     ResponseEntity<?> removeAllPlayersFromRoom() {
-        Logger.debug("Delete al players in room");
+        Logger.debug("Delete all the players in the room");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         gameRoomService.deleteAllPlayers();

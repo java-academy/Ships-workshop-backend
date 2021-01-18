@@ -1,10 +1,16 @@
 package com.ships.room;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-class Player {
+@EqualsAndHashCode
+class Player implements Serializable {
     private String name;
 }

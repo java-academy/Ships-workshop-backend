@@ -3,6 +3,7 @@ package com.ships.room;
 import org.hamcrest.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -10,7 +11,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -18,15 +21,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.testng.Assert.assertEquals;
 
+@WebMvcTest(GameRoomController.class)
 public class GameRoomControllerTest {
     private static final Player DUMMY_PLAYER_1 = new Player("DUMMY_NAME_1");
     private static final Player DUMMY_PLAYER_2 = new Player("DUMMY_NAME_2");
     private static final String ROOM_API = "/room";
     private static final String ROOM_WITH_PLAYER_NAME_API = ROOM_API + "/{name}";
+    private static final String DUMMY_TOKEN = "DUMMY_TOKEN";
     @Mock
     private GameRoomService gameRoomService;
 
     private MockMvc mockMvc;
+
+    Map<String, String> createAddPlayerResult(RoomStatus roomStatus) {
+        return Map.of("status", roomStatus.name(), "token", DUMMY_TOKEN);
+    }
 
     @BeforeMethod
     void setup() {
@@ -47,6 +56,7 @@ public class GameRoomControllerTest {
     @Test
     void shouldHttpGetReturnMessageWithTwoPlayersWhenTwoAreAlreadyInRoom() throws Exception {
         when(gameRoomService.getPlayerListInRoom()).thenReturn(List.of(DUMMY_PLAYER_1, DUMMY_PLAYER_2));
+        when(gameRoomService.updateSession(any())).thenReturn(true);
         MvcResult mvcResult = this.mockMvc.perform(get(ROOM_API))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -58,13 +68,29 @@ public class GameRoomControllerTest {
     }
 
     @Test
+    void shouldHttpGetReturnEmptyListWhenUpdateSessionReturnsFalse() throws Exception {
+        when(gameRoomService.updateSession(any())).thenReturn(false);
+        MvcResult mvcResult = this.mockMvc.perform(get(ROOM_API))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isEmpty())
+                .andReturn();
+
+        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
+    }
+
+
+    @Test
     void shouldAddPlayerReturnSuccessWhenRoomIsEmpty() throws Exception {
-        when(gameRoomService.addPlayer(DUMMY_PLAYER_2.getName())).thenReturn(RoomStatus.SUCCESS);
+        Map<String, String> response = createAddPlayerResult(RoomStatus.SUCCESS);
+        when(gameRoomService.addPlayer(eq(DUMMY_PLAYER_2.getName()), any()))
+                .thenReturn(createAddPlayerResult(RoomStatus.SUCCESS));
         MvcResult mvcResult = this.mockMvc
                 .perform(post(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_2.getName()))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$").doesNotExist())
+                .andExpect(jsonPath("$.status", Matchers.is(response.get("status"))))
+                .andExpect(jsonPath("$.token", Matchers.is(response.get("token"))))
                 .andExpect(header().string("Location", "http://localhost/room/DUMMY_NAME_2"))
                 .andReturn();
 
@@ -75,13 +101,16 @@ public class GameRoomControllerTest {
     Object[] errorCasesInHttpPostResponse() {
         return new Object[] {
                 RoomStatus.NICKNAME_DUPLICATION,
-                RoomStatus.ROOM_IS_FULL
+                RoomStatus.ROOM_IS_FULL,
+                RoomStatus.DUPLICATED_SESSION
         };
     }
 
+
     @Test(dataProvider = "errorCasesInHttpPostResponse")
     void shouldHttpPostReturnMessageWithNicknameDuplicationWhenSuchStatusOccurred(RoomStatus roomStatus) throws Exception {
-        when(gameRoomService.addPlayer(DUMMY_PLAYER_1.getName())).thenReturn(roomStatus);
+        when(gameRoomService.addPlayer(eq(DUMMY_PLAYER_1.getName()), any()))
+                .thenReturn(createAddPlayerResult(roomStatus));
         MvcResult mvcResult = this.mockMvc.perform(post(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
                 .andExpect(status().isConflict())
@@ -124,6 +153,7 @@ public class GameRoomControllerTest {
                 .perform(delete(ROOM_API))
                 .andDo(print())
                 .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
