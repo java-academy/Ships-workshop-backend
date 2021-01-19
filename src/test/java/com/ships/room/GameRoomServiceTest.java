@@ -1,6 +1,5 @@
 package com.ships.room;
 
-import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
@@ -35,7 +34,6 @@ public class GameRoomServiceTest {
 
     @BeforeMethod
     void init() {
-        MockitoAnnotations.openMocks(this);
         sut = new GameRoomService();
         mockHttpServletRequest = new MockHttpServletRequest();
         sa = new SoftAssert();
@@ -79,7 +77,7 @@ public class GameRoomServiceTest {
     void shouldDeletePlayerReturnNoSuchPlayerStatusWhenTryingToRemovePlayerWithDifferentNicknameThanRoomMembers() {
         sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
         sut.addPlayer(DUMMY_PLAYER_2.getName(), new MockHttpServletRequest());
-        assertEquals(sut.deletePlayer(DUMMY_PLAYER_3.getName()), RoomStatus.NO_SUCH_PLAYER);
+        assertEquals(sut.removePlayerAndTheirSession(DUMMY_PLAYER_3.getName(), new MockHttpServletRequest()), RoomStatus.NO_SUCH_PLAYER);
     }
 
     @Test
@@ -91,9 +89,9 @@ public class GameRoomServiceTest {
     }
 
     @Test
-    void shouldDeletePlayerReturnSuccessStatusWhenTryingToRemovePlayerWhoAreInRoom() {
+    void shouldDeletePlayerFromRoomIfSessionEnds() {
         sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
-        sa.assertEquals(sut.deletePlayer(DUMMY_PLAYER_1.getName()), RoomStatus.SUCCESS, "Delete assert");
+        mockHttpServletRequest.getSession().invalidate();
         sa.assertTrue(sut.getPlayerListInRoom().isEmpty(), "Empty assert");
         sa.assertAll();
     }
@@ -124,7 +122,7 @@ public class GameRoomServiceTest {
     }
 
     @Test
-    void shouldNotRemovePlayersWhenAmountOfPlayersInRoomEqualsTo2AndSessionsAreDestroyed() {
+    void shouldRemovePlayersWhenAmountOfPlayersInRoomEqualsTo2AndSessionsAreDestroyed() {
         MockHttpServletRequest secondServlet = new MockHttpServletRequest();
 
         sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
@@ -134,20 +132,7 @@ public class GameRoomServiceTest {
         mockHttpServletRequest.getSession().invalidate();
         secondServlet.getSession().invalidate();
 
-        assertEquals(sut.getPlayerListInRoom().size(), 2);
-    }
-
-    @Test
-    void shouldVerifyIfMaxInactiveIntervalIsRefreshed() {
-        MockHttpServletRequest servletMock = mock(MockHttpServletRequest.class);
-        MockHttpSession sessionMock = mock(MockHttpSession.class);
-
-        when(servletMock.getSession(false)).thenReturn(sessionMock);
-        when(sessionMock.getAttribute(any())).thenReturn(new LoggedPlayer());
-
-        sut.updateSession(servletMock);
-
-        verify(sessionMock).setMaxInactiveInterval(MAX_INACTIVE_INTERVAL_IN_ROOM);
+        assertEquals(sut.getPlayerListInRoom().size(), 0);
     }
 
     @Test

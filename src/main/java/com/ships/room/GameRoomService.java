@@ -1,6 +1,7 @@
 package com.ships.room;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.tinylog.Logger;
 
@@ -16,6 +17,7 @@ class GameRoomService implements Serializable {
     static final int MAX_PLAYERS_IN_ROOM = 2;
     static final int MAX_INACTIVE_INTERVAL_IN_ROOM = 10;
     static final String EMPTY_TOKEN = "EMPTY";
+    private int numberOfSessionsInGame = 0;
 
     @Getter
     private final List<Player> playerListInRoom = new ArrayList<>(MAX_PLAYERS_IN_ROOM);
@@ -29,17 +31,20 @@ class GameRoomService implements Serializable {
             return false ;
         }
         if (GameRoomService.MAX_PLAYERS_IN_ROOM == numberOfPlayers) {
-            LoggedPlayer loggedPlayer = (LoggedPlayer) session.getAttribute("user");
-            loggedPlayer.removeOnlySession();
-        } else
-            session.setMaxInactiveInterval(GameRoomService.MAX_INACTIVE_INTERVAL_IN_ROOM);
+            session.setMaxInactiveInterval(-1);
+        }
+        System.out.println("BORYS numberOfSessionsInGame= " + numberOfSessionsInGame);
         return true;
     }
 
     Map<String, String> addPlayer(String name, HttpServletRequest req) {
+        System.out.println("BORYS from add player numberOfSessionsInGame= " + numberOfSessionsInGame);
         RoomStatus result = checkIfPlayerCanBeAddedToRoom(name, req);
         String token = EMPTY_TOKEN;
         if(result == RoomStatus.SUCCESS) {
+            if(playerListInRoom.size() == 1) {
+                numberOfSessionsInGame = GameRoomService.MAX_PLAYERS_IN_ROOM;
+            }
             HttpSession session = req.getSession(true);
             session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL_IN_ROOM);
             LoggedPlayer user = new LoggedPlayer(new Player(name), this);
@@ -49,11 +54,17 @@ class GameRoomService implements Serializable {
         return Map.of("status", result.name(), "token", token);
     }
 
-    RoomStatus deletePlayer(String name) {
+    RoomStatus removePlayerAndTheirSession(String name, HttpServletRequest req) {
+        if(numberOfSessionsInGame <= 0) {
+            Logger.info("Try to remove {}, but numberOfSessionsInGame is {}", name, numberOfSessionsInGame);
+            return RoomStatus.SUCCESS;
+        }
         for(var player : playerListInRoom)
             if(player.getName().equals(name)) {
-                playerListInRoom.remove(player);
                 Logger.info("{} deleted from the room", name);
+                playerListInRoom.remove(player);
+                numberOfSessionsInGame--;
+                req.getSession().invalidate();
                 return RoomStatus.SUCCESS;
             }
         Logger.info("There is no {} in the room", name);
@@ -73,7 +84,7 @@ class GameRoomService implements Serializable {
             Logger.info("There is a player with the same nickname!");
             return RoomStatus.NICKNAME_DUPLICATION;
         }
-        if(null != req.getSession(false)) {
+        if(null != req.getSession(false) || numberOfSessionsInGame != 0) {
             Logger.info("There is a player with same session ");
             return RoomStatus.DUPLICATED_SESSION;
         }

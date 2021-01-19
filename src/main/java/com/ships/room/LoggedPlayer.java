@@ -1,6 +1,5 @@
 package com.ships.room;
 
-import lombok.Setter;
 import org.tinylog.Logger;
 
 import javax.servlet.annotation.WebListener;
@@ -13,8 +12,6 @@ import java.util.List;
 public class LoggedPlayer implements HttpSessionBindingListener, Serializable {
     private Player player;
     private GameRoomService gameRoomService;
-    @Setter
-    private boolean shouldSessionBeOnlyRemovedDuringUnbound = false;
 
     LoggedPlayer(Player player, GameRoomService gameRoomService) {
         this.player = player;
@@ -22,10 +19,6 @@ public class LoggedPlayer implements HttpSessionBindingListener, Serializable {
     }
 
     public LoggedPlayer() {
-    }
-
-    void removeOnlySession() {
-        shouldSessionBeOnlyRemovedDuringUnbound = true;
     }
 
     @Override
@@ -40,10 +33,6 @@ public class LoggedPlayer implements HttpSessionBindingListener, Serializable {
     @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
         LoggedPlayer loggedPlayer = (LoggedPlayer) event.getValue();
-        if (loggedPlayer.shouldSessionBeOnlyRemovedDuringUnbound) {
-            Logger.debug("{}'s session has been removed!", loggedPlayer.player.getName());
-            return;
-        }
         List<Player> playerListInRoom = loggedPlayer.gameRoomService.getPlayerListInRoom();
         Player player = loggedPlayer.player;
         playerListInRoom.remove(player);
