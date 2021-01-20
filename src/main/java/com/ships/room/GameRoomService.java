@@ -1,7 +1,6 @@
 package com.ships.room;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.tinylog.Logger;
 
