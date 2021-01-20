@@ -12,6 +12,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,12 @@ public class GameRoomControllerTest {
     private static final String DUMMY_TOKEN = "DUMMY_TOKEN";
     @Mock
     private GameRoomService gameRoomService;
+
+    @Mock
+    private HttpServletRequest httpServletRequestMock;
+
+    @Mock
+    private HttpSession httpSessionMock;
 
     private MockMvc mockMvc;
 
@@ -123,11 +130,12 @@ public class GameRoomControllerTest {
 
     @Test
     void shouldHttpDeleteReturnSuccess() throws Exception {
-        when(gameRoomService.deletePlayer(DUMMY_PLAYER_1.getName())).thenReturn(RoomStatus.SUCCESS);
+        when(gameRoomService.removePlayerAndTheirSession(DUMMY_PLAYER_1.getName(), httpServletRequestMock)).thenReturn(RoomStatus.SUCCESS);
+        when(httpServletRequestMock.getSession(false)).thenReturn(httpSessionMock);
         MvcResult mvcResult = this.mockMvc
                 .perform(delete(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
-                .andExpect(status().isNoContent())
+                .andExpect(status().isMultiStatus())
                 .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
 
@@ -136,12 +144,13 @@ public class GameRoomControllerTest {
 
     @Test
     void shouldHttpDeleteReturnNoSuchPlayerMessage() throws Exception {
-        when(gameRoomService.deletePlayer(DUMMY_PLAYER_1.getName())).thenReturn(RoomStatus.NO_SUCH_PLAYER);
+        when(gameRoomService.removePlayerAndTheirSession(DUMMY_PLAYER_1.getName(), httpServletRequestMock)).thenReturn(RoomStatus.NO_SUCH_PLAYER);
+        when(httpServletRequestMock.getSession(false)).thenReturn(null);
         MvcResult mvcResult = this.mockMvc
                 .perform(delete(ROOM_WITH_PLAYER_NAME_API, DUMMY_PLAYER_1.getName()))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity())
-                .andExpect(jsonPath("$", Matchers.is(RoomStatus.NO_SUCH_PLAYER.name())))
+                .andExpect(status().isMultiStatus())
+                .andExpect(jsonPath("$").doesNotExist())
                 .andReturn();
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");

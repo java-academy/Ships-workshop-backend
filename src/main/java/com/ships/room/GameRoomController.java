@@ -46,14 +46,15 @@ class GameRoomController {
     }
 
     @DeleteMapping("/{name}")
-    ResponseEntity<?> removePlayerFromRoom(@PathVariable String name) {
+    ResponseEntity<?> removePlayerFromRoom(@PathVariable String name, HttpServletRequest req) {
         Logger.debug("Delete a player of name {}", name);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        RoomStatus result = gameRoomService.deletePlayer(name);
+
+        RoomStatus result = gameRoomService.removePlayerAndTheirSession(name, req);
         if (result == RoomStatus.SUCCESS)
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
-        return new ResponseEntity<>(result, headers, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(result, headers, HttpStatus.MULTI_STATUS);
     }
 
     @DeleteMapping
