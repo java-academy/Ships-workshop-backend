@@ -27,7 +27,7 @@ class GameRoomService implements Serializable {
         HttpSession session = req.getSession(false);
         if (null == session) {
             Logger.error("Session is null!");
-            return false ;
+            return false;
         }
         if (GameRoomService.MAX_PLAYERS_IN_ROOM == numberOfPlayers) {
             session.setMaxInactiveInterval(-1);
@@ -41,15 +41,14 @@ class GameRoomService implements Serializable {
         RoomStatus result = checkIfPlayerCanBeAddedToRoom(name, req);
         String token = EMPTY_TOKEN;
         if(result == RoomStatus.SUCCESS) {
-            if(playerListInRoom.size() == 1) {
-                numberOfSessionsInGame = GameRoomService.MAX_PLAYERS_IN_ROOM;
-            }
+            numberOfSessionsInGame++;
             HttpSession session = req.getSession(true);
             session.setMaxInactiveInterval(MAX_INACTIVE_INTERVAL_IN_ROOM);
             LoggedPlayer user = new LoggedPlayer(new Player(name), this);
             session.setAttribute("user", user);
             token = session.getId();
         }
+        System.out.println("BORYS after adding player numberOfSessionsInGame= " + numberOfSessionsInGame);
         return Map.of("status", result.name(), "token", token);
     }
 
