@@ -155,17 +155,4 @@ public class GameRoomControllerTest {
 
         assertEquals(mvcResult.getResponse().getContentType(), "application/json");
     }
-
-    @Test
-    void shouldHttpDeleteAllPlayersInARoom() throws Exception {
-        MvcResult mvcResult = this.mockMvc
-                .perform(delete(ROOM_API))
-                .andDo(print())
-                .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$").doesNotExist())
-                .andReturn();
-
-        assertEquals(mvcResult.getResponse().getContentType(), "application/json");
-        verify(gameRoomService, times(1)).deleteAllPlayers();
-    }
 }

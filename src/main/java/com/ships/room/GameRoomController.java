@@ -38,31 +38,22 @@ class GameRoomController {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setLocation(location);
 
-        Map<String,String> result = gameRoomService.addPlayer(name, req);
-        String status = result.get("status");
-        if (status.equals(RoomStatus.SUCCESS.name()))
-            return new ResponseEntity<>(result, headers, HttpStatus.CREATED);
-        return new ResponseEntity<>(status, headers, HttpStatus.CONFLICT);
+        return null;
+        // TODO: #2 - implement the method
+        //  create map<player name, request> for result
+        //  read the status from the map
+        //  if the status is successful return proper response entity, else
+        //  return response entity saying that something went wrong
     }
 
-    @DeleteMapping("/{name}")
+    // TODO: #3 - there is something wrong with this method
+    @DeleteMapping("/{playerName}")
     ResponseEntity<?> removePlayerFromRoom(@PathVariable String name, HttpServletRequest req) {
         Logger.debug("Delete a player of name {}", name);
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
         RoomStatus result = gameRoomService.removePlayerAndTheirSession(name, req);
         if (result == RoomStatus.SUCCESS)
             return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
         return new ResponseEntity<>(result, headers, HttpStatus.MULTI_STATUS);
-    }
-
-    @DeleteMapping
-    ResponseEntity<?> removeAllPlayersFromRoom() {
-        Logger.debug("Delete all the players in the room");
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        gameRoomService.deleteAllPlayers();
-        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 }

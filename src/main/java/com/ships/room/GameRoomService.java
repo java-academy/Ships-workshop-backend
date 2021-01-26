@@ -53,7 +53,7 @@ class GameRoomService implements Serializable {
     }
 
     RoomStatus removePlayerAndTheirSession(String name, HttpServletRequest req) {
-        if(numberOfSessionsInGame <= 0) {
+        if(numberOfSessionsInGame <= 1) {
             Logger.info("Try to remove {}, but numberOfSessionsInGame is {}", name, numberOfSessionsInGame);
             return RoomStatus.SUCCESS;
         }

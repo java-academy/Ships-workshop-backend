@@ -16,6 +16,7 @@ import java.util.List;
 @Configuration
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    // TODO: # 1 - connect services
     @Override
     protected void configure(HttpSecurity http) throws Exception{
         http.cors().and().csrf().disable();
@@ -25,7 +26,7 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        configuration.setAllowedOrigins(List.of("https://example.com"));
         configuration.setAllowedMethods(Collections.singletonList("*"));
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
