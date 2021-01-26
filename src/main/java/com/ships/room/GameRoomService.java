@@ -82,7 +82,7 @@ class GameRoomService implements Serializable {
             Logger.info("There is a player with the same nickname!");
             return RoomStatus.NICKNAME_DUPLICATION;
         }
-        if(null != req.getSession(false) || numberOfSessionsInGame != 0) {
+        if(null != req.getSession(false)) {
             Logger.info("There is a player with same session ");
             return RoomStatus.DUPLICATED_SESSION;
         }

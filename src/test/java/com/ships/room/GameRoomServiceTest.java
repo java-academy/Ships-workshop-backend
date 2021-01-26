@@ -69,7 +69,7 @@ public class GameRoomServiceTest {
         sut.addPlayer(DUMMY_PLAYER_1.getName(), mockHttpServletRequest);
         sut.addPlayer(DUMMY_PLAYER_2.getName(), secondServlet);
 
-        assertEquals(sut.addPlayer(DUMMY_PLAYER_3.getName(), mockHttpServletRequest),
+        assertEquals(sut.addPlayer(DUMMY_PLAYER_3.getName(), new MockHttpServletRequest()),
                 createAddPlayerResult(RoomStatus.ROOM_IS_FULL, EMPTY_TOKEN));
     }
 
