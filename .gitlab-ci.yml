@@ -1,10 +1,4 @@
-stages:
-  - build
-  - test
-  - package
-  - static analysis
-  - deploy
-
+image: maven:latest
 
 variables:
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end"
@@ -14,6 +8,12 @@ cache:
   paths:
     - .m2/repository
     - target/
+
+stages:
+  - build
+  - test
+  - package
+  - static analysis
 
 build:
   stage: build
