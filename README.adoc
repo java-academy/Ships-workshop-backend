@@ -1,13 +1,32 @@
-= RoomService
+= Ships backend - warsztat
 
-== Overview
-This is a project of a room service for the *Ships* game.
+== Zadanie
 
-== Prerequisites
-If you want to build it you need the following Java version: 11.0.9.1.
+. Zapoznaj się dokumentacją projektu:
+.. architektura serwisów
+.. diagram przepływu
+.. część frontendowa
+.. część backendowa
+.. REST API
++
+. Zadanie warsztatowe posiada ograniczone funkcjonalności w stosunku do całego projektu (tylko strona główna + poczekalnia)
+. Zapoznaj się z kodem i komentarzami w środku
+.. Twój lokalny frontend powinien łączyć się z lokalnym backendem - TODO 1
+. Uruchom aplikację:
+.. Dodaj nowego gracza
+.. Uruchom aplikację w nowej karcie inkognito
+.. Dodaj gracza w karcie inkognito
+. Czy powyższe kroki działają? - TODO 2
+. Sprawdź, wykorzystując frontend, działanie aplikacji po wprowadzonych zmianach (manualnie)
+. Usuń gracza z pokoju
+. Czy powyższy krok działa? - TODO 3
+. Sprawdź, wykorzystując frontend, działanie aplikacji po wprowadzonych zmianach (manualnie)
 
-== Run
-In order to run, execute `mvn spring-boot:run` if maven is configured on your machine.
-Otherwise, execute `./mvnw spring-boot:run`.
+== Wymagania
+Jeśli chcesz zudować ten projekt potrzebujesz JAVY: 11.0.9.1.
 
-When application runs, the logs are saved in `${HOME}/logs`.
+== Uruchamianie
+Aby uruchomić, wywołaj: `mvn spring-boot:run` (jeśli posiadasz mavena na swojej maszynie).
+W przeciwnym wypadku wywołaj: `./mvnw spring-boot:run`.
+
+Logi z działania aplikacji są zapisywane do `${HOME}/logs`.
