@@ -23,7 +23,7 @@
 . Sprawdź, wykorzystując frontend, działanie aplikacji po wprowadzonych zmianach (manualnie)
 
 == Wymagania
-Jeśli chcesz zudować ten projekt potrzebujesz JAVY: 11.0.9.1.
+Jeśli chcesz zbudować ten projekt potrzebujesz JAVY: 11.0.9.1.
 
 == Uruchamianie
 Aby uruchomić, wywołaj: `mvn spring-boot:run` (jeśli posiadasz mavena na swojej maszynie).
